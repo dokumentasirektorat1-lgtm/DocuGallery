@@ -23,9 +23,9 @@ export function MediaCard({ folder }: MediaCardProps) {
     }
 
     return (
-        <Link
-            href={`/media/${folder.id}`}
-            className="group relative block rounded-2xl overflow-hidden bg-surface dark:bg-surface border border-border shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+        <div
+            onClick={() => window.open(`https://drive.google.com/drive/folders/${folder.driveFolderId}`, '_blank')}
+            className="group relative block rounded-2xl overflow-hidden bg-surface dark:bg-surface border border-border shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer"
         >
             {/* Category Badge */}
             <div className="absolute top-3 left-3 z-20">
@@ -92,6 +92,6 @@ export function MediaCard({ folder }: MediaCardProps) {
                     </div>
                 </div>
             </div>
-        </Link>
+        </div>
     )
 }

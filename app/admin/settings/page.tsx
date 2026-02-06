@@ -5,11 +5,13 @@ import { AdminSidebar } from "@/components/AdminSidebar"
 import { useSettings } from "@/context/SettingsContext"
 
 export default function SettingsPage() {
-    const { appName, appLogo, updateSettings } = useSettings();
+    const { appName, appLogo, heroHeadline, heroSubline, updateSettings } = useSettings();
 
     // Local state for inputs
     const [nameInput, setNameInput] = useState(appName);
     const [logoInput, setLogoInput] = useState(appLogo);
+    const [heroHeadlineInput, setHeroHeadlineInput] = useState(heroHeadline);
+    const [heroSublineInput, setHeroSublineInput] = useState(heroSubline);
 
     // Other settings
     const [profileName, setProfileName] = useState("Admin User");
@@ -17,14 +19,16 @@ export default function SettingsPage() {
     const [publicRegistration, setPublicRegistration] = useState(false);
     const [apiKey, setApiKey] = useState("");
 
-    // Sync local state when context changes (optional, mostly for init)
+    // Sync local state when context changes
     useEffect(() => {
         setNameInput(appName);
         setLogoInput(appLogo);
-    }, [appName, appLogo]);
+        setHeroHeadlineInput(heroHeadline);
+        setHeroSublineInput(heroSubline);
+    }, [appName, appLogo, heroHeadline, heroSubline]);
 
     const handleSaveGlobalRender = () => {
-        updateSettings(nameInput, logoInput);
+        updateSettings(nameInput, logoInput, heroHeadlineInput, heroSublineInput);
         alert("Settings updated!");
     };
 
@@ -65,6 +69,33 @@ export default function SettingsPage() {
                                 </div>
                                 <button onClick={handleSaveGlobalRender} className="w-full py-2 bg-primary/10 text-primary hover:bg-primary/20 font-bold rounded-lg transition-colors">
                                     Update Identity
+                                </button>
+                            </div>
+
+                            <hr className="border-border my-6" />
+
+                            <h2 className="text-lg font-bold text-foreground mb-4">Hero Section</h2>
+                            <div className="space-y-4">
+                                <div className="space-y-1.5">
+                                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Hero Headline</label>
+                                    <input
+                                        type="text"
+                                        value={heroHeadlineInput}
+                                        onChange={(e) => setHeroHeadlineInput(e.target.value)}
+                                        className="w-full px-4 py-2 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all font-sans"
+                                    />
+                                </div>
+                                <div className="space-y-1.5">
+                                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Hero Sub-headline</label>
+                                    <textarea
+                                        value={heroSublineInput}
+                                        onChange={(e) => setHeroSublineInput(e.target.value)}
+                                        rows={3}
+                                        className="w-full px-4 py-2 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all font-sans"
+                                    />
+                                </div>
+                                <button onClick={handleSaveGlobalRender} className="w-full py-2 bg-primary/10 text-primary hover:bg-primary/20 font-bold rounded-lg transition-colors">
+                                    Update Hero
                                 </button>
                             </div>
                         </div>
