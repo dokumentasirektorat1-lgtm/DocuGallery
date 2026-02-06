@@ -22,3 +22,21 @@ export function convertDriveToThumbnail(link: string): string {
   // Return original if no match (assumes it's a direct link or valid URL)
   return link;
 }
+
+export function getDirectLink(url: string): string {
+  if (!url) return "";
+
+  // Check if it's a Google Drive file link
+  // Pattern: https://drive.google.com/file/d/ID_FILE/view...
+  // Convert to: https://drive.google.com/uc?export=view&id=ID_FILE
+
+  const driveRegex = /\/d\/([a-zA-Z0-9_-]+)/;
+  const match = url.match(driveRegex);
+
+  if (match && match[1]) {
+    return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+  }
+
+  // Return original if not a Drive link
+  return url;
+}

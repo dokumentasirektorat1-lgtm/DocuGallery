@@ -6,6 +6,9 @@ import { AuthProvider } from "@/context/AuthContext";
 import { SettingsProvider } from "@/context/SettingsContext";
 import { DataProvider } from "@/context/DataContext";
 import { Navbar } from "@/components/Navbar";
+import { Toaster } from "react-hot-toast";
+import { DynamicHead } from "@/components/DynamicHead";
+import { DynamicBranding } from "@/components/DynamicBranding";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -39,10 +42,29 @@ export default function RootLayout({
           <AuthProvider>
             <SettingsProvider>
               <DataProvider>
+                <DynamicHead />
+                <DynamicBranding />
                 <Navbar />
                 <main className="min-h-screen transition-colors duration-300">
                   {children}
                 </main>
+                <Toaster
+                  position="top-right"
+                  toastOptions={{
+                    duration: 3000,
+                    style: {
+                      background: 'var(--background)',
+                      color: 'var(--foreground)',
+                      border: '1px solid var(--border)',
+                    },
+                    success: {
+                      iconTheme: {
+                        primary: '#06B6D4',
+                        secondary: '#ffffff',
+                      },
+                    },
+                  }}
+                />
               </DataProvider>
             </SettingsProvider>
           </AuthProvider>

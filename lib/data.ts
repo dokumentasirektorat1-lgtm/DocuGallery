@@ -8,6 +8,8 @@ export interface MediaFolder {
     driveFolderId: string;
     isPrivate: boolean;
     status?: "Synced" | "Indexing" | "Error";
+    contentType?: "drive" | "facebook"; // NEW: Platform type
+    postType?: "post" | "video"; // NEW: For Facebook content
 }
 
 export const folders: MediaFolder[] = [

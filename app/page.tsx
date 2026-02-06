@@ -5,18 +5,49 @@ import { GalleryGrid } from "@/components/GalleryGrid";
 import { Hero } from "@/components/Hero";
 import { FilterBar } from "@/components/FilterBar";
 import { useProjects } from "@/lib/useProjects";
+import { extractYearFromDate } from "@/lib/dateUtils";
 
 export default function Home() {
     const { projects, loading } = useProjects();
     const [activeYear, setActiveYear] = useState("All");
     const [searchTerm, setSearchTerm] = useState("");
 
-    const filteredProjects = projects.filter(project => {
-        const matchesYear = activeYear === "All" || project.date.startsWith(activeYear);
-        const matchesSearch = project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            project.location.toLowerCase().includes(searchTerm.toLowerCase());
-        return matchesYear && matchesSearch;
-    });
+    const filteredProjects = projects
+        .filter(project => {
+            // Use robust date parser to extract year from various formats
+            const projectYear = extractYearFromDate(project.date);
+            const matchesYear = activeYear === "All" || projectYear === activeYear;
+            const matchesSearch = project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                project.location.toLowerCase().includes(searchTerm.toLowerCase());
+            return matchesYear && matchesSearch;
+        })
+        .sort((a, b) => {
+            // Sort by date descending (newest first)
+            // Parse dates properly - support YYYY-MM-DD, DD/MM/YYYY formats
+            const parseDate = (dateStr: string): number => {
+                if (!dateStr) return 0;
+
+                // Try parsing as-is first (works for YYYY-MM-DD)
+                const timestamp = new Date(dateStr).getTime();
+                if (!isNaN(timestamp)) return timestamp;
+
+                // Try DD/MM/YYYY or DD-MM-YYYY format
+                const parts = dateStr.split(/[-\/]/);
+                if (parts.length === 3) {
+                    // If first part is 4 digits, it's YYYY-MM-DD (already handled above)
+                    // Otherwise assume DD/MM/YYYY or DD-MM-YYYY
+                    if (parts[0].length !== 4) {
+                        return new Date(`${parts[2]}-${parts[1]}-${parts[0]}`).getTime() || 0;
+                    }
+                }
+
+                return 0;
+            };
+
+            const dateA = parseDate(a.date);
+            const dateB = parseDate(b.date);
+            return dateB - dateA; // Descending order (newest first)
+        });
 
     return (
         <div className="container mx-auto px-4 pb-20">

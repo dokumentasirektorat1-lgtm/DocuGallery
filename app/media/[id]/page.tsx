@@ -1,12 +1,13 @@
 "use client"
 
 import { useParams } from "next/navigation"
-import { folders } from "@/lib/data"
 import Link from "next/link"
 import Image from "next/image"
 import { useState } from "react"
 import { Lightbox } from "@/components/Lightbox"
 import { VideoPlayer } from "@/components/VideoPlayer"
+import { useProjects } from "@/lib/useProjects"
+import { useAuth } from "@/context/AuthContext"
 
 // Dummy content for the detail view simulation
 const dummyContent = [
@@ -18,12 +19,57 @@ const dummyContent = [
 
 export default function MediaDetailPage() {
     const params = useParams()
-    const folder = folders.find(f => f.id === params.id)
+    const { projects } = useProjects()
+    const { user, userData } = useAuth()
     const [lightboxOpen, setLightboxOpen] = useState(false)
     const [currentImage, setCurrentImage] = useState("")
 
+    const folder = projects.find(f => f.id === params.id)
+
     if (!folder) {
-        return <div className="text-center py-20">Folder not found</div>
+        return <div className="text-center py-20">Project not found</div>
+    }
+
+    // Privacy Gate Logic
+    const isPendingUser = user && userData?.status === "pending"
+    const isGuest = !user
+    const isPrivateContent = folder.isPrivate
+    const canViewPrivateContent = user && userData?.status === "approved"
+
+    // Block access for pending users trying to view private content
+    if (isPrivateContent && isPendingUser) {
+        return (
+            <div className="min-h-screen flex items-center justify-center p-4">
+                <div className="max-w-md w-full bg-amber-50 dark:bg-amber-900/20 border-2 border-amber-200 dark:border-amber-800 rounded-2xl p-8 text-center">
+                    <span className="material-symbols-outlined text-[64px] text-amber-600 mb-4">lock</span>
+                    <h2 className="text-xl font-bold text-foreground mb-2">Akun Dalam Antrean Verifikasi</h2>
+                    <p className="text-gray-600 dark:text-gray-400 mb-6">
+                        Akun Anda dalam antrean verifikasi. Mohon tunggu persetujuan Admin untuk melihat konten privat.
+                    </p>
+                    <Link href="/" className="inline-block px-6 py-3 bg-primary hover:bg-cyan-600 text-white font-bold rounded-xl transition-colors">
+                        Kembali ke Beranda
+                    </Link>
+                </div>
+            </div>
+        )
+    }
+
+    // Block access for guests trying to view private content
+    if (isPrivateContent && isGuest) {
+        return (
+            <div className="min-h-screen flex items-center justify-center p-4">
+                <div className="max-w-md w-full bg-red-50 dark:bg-red-900/20 border-2 border-red-200 dark:border-red-800 rounded-2xl p-8 text-center">
+                    <span className="material-symbols-outlined text-[64px] text-red-600 mb-4">lock</span>
+                    <h2 className="text-xl font-bold text-foreground mb-2">Konten Privat</h2>
+                    <p className="text-gray-600 dark:text-gray-400 mb-6">
+                        Anda harus login dan terverifikasi untuk melihat konten ini.
+                    </p>
+                    <Link href="/login" className="inline-block px-6 py-3 bg-primary hover:bg-cyan-600 text-white font-bold rounded-xl transition-colors">
+                        Login
+                    </Link>
+                </div>
+            </div>
+        )
     }
 
     return (
@@ -47,6 +93,21 @@ export default function MediaDetailPage() {
                 </div>
             </div>
 
+            {/* Hide Drive link for guests on private content */}
+            {!(isPrivateContent && isGuest) && (
+                <div className="flex gap-3">
+                    <a
+                        href={`https://drive.google.com/drive/folders/${folder.driveFolderId}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-cyan-600 text-white font-medium rounded-xl transition-colors shadow-lg shadow-cyan-500/25"
+                    >
+                        <span className="material-symbols-outlined text-[20px]">folder_open</span>
+                        Open in Drive
+                    </a>
+                </div>
+            )}
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {dummyContent.map((item) => (
                     <div
@@ -67,6 +128,7 @@ export default function MediaDetailPage() {
                                     src={item.src}
                                     alt="Gallery item"
                                     fill
+                                    loading="lazy"
                                     className="object-cover transition-transform duration-500 group-hover:scale-105"
                                 />
                                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />

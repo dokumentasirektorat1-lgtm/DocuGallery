@@ -10,7 +10,9 @@ interface SettingsContextType {
     appLogo: string;
     heroHeadline: string;
     heroSubline: string;
-    updateSettings: (name: string, logo: string, headline?: string, subline?: string) => void;
+    faviconUrl: string;
+    browserTitle: string;
+    updateSettings: (name: string, logo: string, headline?: string, subline?: string, favicon?: string, title?: string) => void;
 }
 
 const SettingsContext = createContext<SettingsContextType>({
@@ -18,6 +20,8 @@ const SettingsContext = createContext<SettingsContextType>({
     appLogo: "",
     heroHeadline: "Your Enterprise Knowledge Base & Gallery",
     heroSubline: "Securely access event documentation, project assets, and internal resources from a single unified hub.",
+    faviconUrl: "",
+    browserTitle: "DocuGallery Hub",
     updateSettings: () => { },
 });
 
@@ -28,6 +32,8 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     const [appLogo, setAppLogo] = useState("");
     const [heroHeadline, setHeroHeadline] = useState("Your Enterprise Knowledge Base & Gallery");
     const [heroSubline, setHeroSubline] = useState("Securely access event documentation, project assets, and internal resources from a single unified hub.");
+    const [faviconUrl, setFaviconUrl] = useState("");
+    const [browserTitle, setBrowserTitle] = useState("DocuGallery Hub");
     const [isInitialized, setIsInitialized] = useState(false);
 
     // Load from Firestore (Real-time)
@@ -40,6 +46,8 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
                 if (data.appLogo) setAppLogo(data.appLogo);
                 if (data.heroHeadline) setHeroHeadline(data.heroHeadline);
                 if (data.heroSubline) setHeroSubline(data.heroSubline);
+                if (data.faviconUrl) setFaviconUrl(data.faviconUrl);
+                if (data.browserTitle) setBrowserTitle(data.browserTitle);
             }
             setIsInitialized(true);
         });
@@ -47,12 +55,14 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
         return () => unsubscribe();
     }, []);
 
-    const updateSettings = async (name: string, logo: string, headline?: string, subline?: string) => {
+    const updateSettings = async (name: string, logo: string, headline?: string, subline?: string, favicon?: string, title?: string) => {
         // Optimistic update
         setAppName(name);
         setAppLogo(logo);
         if (headline) setHeroHeadline(headline);
         if (subline) setHeroSubline(subline);
+        if (favicon !== undefined) setFaviconUrl(favicon);
+        if (title !== undefined) setBrowserTitle(title);
 
         // Firestore update
         const docRef = doc(db, "settings", "siteConfig");
@@ -60,12 +70,14 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
             appName: name,
             appLogo: logo,
             heroHeadline: headline || heroHeadline,
-            heroSubline: subline || heroSubline
+            heroSubline: subline || heroSubline,
+            faviconUrl: favicon !== undefined ? favicon : faviconUrl,
+            browserTitle: title !== undefined ? title : browserTitle
         }, { merge: true });
     };
 
     return (
-        <SettingsContext.Provider value={{ appName, appLogo, heroHeadline, heroSubline, updateSettings }}>
+        <SettingsContext.Provider value={{ appName, appLogo, heroHeadline, heroSubline, faviconUrl, browserTitle, updateSettings }}>
             {children}
         </SettingsContext.Provider>
     );

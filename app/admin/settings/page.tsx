@@ -5,13 +5,15 @@ import { AdminSidebar } from "@/components/AdminSidebar"
 import { useSettings } from "@/context/SettingsContext"
 
 export default function SettingsPage() {
-    const { appName, appLogo, heroHeadline, heroSubline, updateSettings } = useSettings();
+    const { appName, appLogo, heroHeadline, heroSubline, faviconUrl, browserTitle, updateSettings } = useSettings();
 
     // Local state for inputs
     const [nameInput, setNameInput] = useState(appName);
     const [logoInput, setLogoInput] = useState(appLogo);
     const [heroHeadlineInput, setHeroHeadlineInput] = useState(heroHeadline);
     const [heroSublineInput, setHeroSublineInput] = useState(heroSubline);
+    const [faviconInput, setFaviconInput] = useState(faviconUrl);
+    const [browserTitleInput, setBrowserTitleInput] = useState(browserTitle);
 
     // Other settings
     const [profileName, setProfileName] = useState("Admin User");
@@ -25,10 +27,12 @@ export default function SettingsPage() {
         setLogoInput(appLogo);
         setHeroHeadlineInput(heroHeadline);
         setHeroSublineInput(heroSubline);
-    }, [appName, appLogo, heroHeadline, heroSubline]);
+        setFaviconInput(faviconUrl);
+        setBrowserTitleInput(browserTitle);
+    }, [appName, appLogo, heroHeadline, heroSubline, faviconUrl, browserTitle]);
 
     const handleSaveGlobalRender = () => {
-        updateSettings(nameInput, logoInput, heroHeadlineInput, heroSublineInput);
+        updateSettings(nameInput, logoInput, heroHeadlineInput, heroSublineInput, faviconInput, browserTitleInput);
         alert("Settings updated!");
     };
 
@@ -45,7 +49,7 @@ export default function SettingsPage() {
 
                     <div className="space-y-6">
                         {/* Web Customization Section */}
-                        <div className="p-6 rounded-xl border border-border bg-surface shadow-sm sticky top-6">
+                        <div className="p-6 rounded-xl border border-border bg-surface shadow-sm">
                             <h2 className="text-lg font-bold text-foreground mb-4">Web Customization</h2>
                             <div className="space-y-4">
                                 <div className="space-y-1.5">
@@ -66,6 +70,28 @@ export default function SettingsPage() {
                                         placeholder="https://..."
                                         className="w-full px-4 py-2 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all font-sans"
                                     />
+                                </div>
+                                <div className="space-y-1.5">
+                                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Favicon URL</label>
+                                    <input
+                                        type="text"
+                                        value={faviconInput}
+                                        onChange={(e) => setFaviconInput(e.target.value)}
+                                        placeholder="https://example.com/favicon.ico"
+                                        className="w-full px-4 py-2 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all font-sans"
+                                    />
+                                    <p className="text-xs text-gray-400">Icon shown in browser tab</p>
+                                </div>
+                                <div className="space-y-1.5">
+                                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Browser Tab Title</label>
+                                    <input
+                                        type="text"
+                                        value={browserTitleInput}
+                                        onChange={(e) => setBrowserTitleInput(e.target.value)}
+                                        placeholder="My Gallery Site"
+                                        className="w-full px-4 py-2 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all font-sans"
+                                    />
+                                    <p className="text-xs text-gray-400">Title shown in browser tab</p>
                                 </div>
                                 <button onClick={handleSaveGlobalRender} className="w-full py-2 bg-primary/10 text-primary hover:bg-primary/20 font-bold rounded-lg transition-colors">
                                     Update Identity

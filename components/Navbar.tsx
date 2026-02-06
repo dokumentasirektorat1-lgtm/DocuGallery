@@ -6,18 +6,22 @@ import { ThemeToggle } from "./ThemeToggle"
 import { useAuth } from "@/context/AuthContext"
 import { useSettings } from "@/context/SettingsContext"
 import { auth } from "@/lib/firebase"
+import { getDirectLink } from "@/lib/utils"
 
 export function Navbar() {
     const { user, userData } = useAuth();
     const { appName, appLogo } = useSettings();
 
+    // Convert Drive links to direct viewable links
+    const displayLogo = getDirectLink(appLogo);
+
     return (
         <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-md">
             <div className="container mx-auto px-4 h-16 flex items-center justify-between">
                 <Link href="/" className="flex items-center gap-2 font-bold text-xl text-primary">
-                    {appLogo ? (
+                    {displayLogo ? (
                         <div className="relative w-8 h-8 rounded-lg overflow-hidden">
-                            <Image src={appLogo} alt="Logo" fill className="object-cover" />
+                            <Image src={displayLogo} alt="Logo" fill className="object-cover" />
                         </div>
                     ) : (
                         <span className="material-symbols-outlined filled">gallery_thumbnail</span>
