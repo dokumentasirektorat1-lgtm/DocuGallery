@@ -14,7 +14,6 @@ import {
     getDocs,
     writeBatch
 } from "firebase/firestore";
-import { generateAutoThumbnail } from "@/lib/autoThumbnail";
 
 interface DataContextType {
     projects: MediaFolder[];
@@ -96,12 +95,10 @@ export function DataProvider({ children }: { children: ReactNode }) {
                     ...doc.data()
                 } as MediaFolder;
 
-                // Auto-generate thumbnail if missing
-                if (!project.thumbnailUrl) {
-                    const autoThumb = generateAutoThumbnail(project);
-                    if (autoThumb) {
-                        project.thumbnailUrl = autoThumb;
-                    }
+                // Quick thumbnail fallback if missing (non-blocking)
+                if (!project.thumbnailUrl && project.contentType === 'drive' && project.driveFolderId) {
+                    // Use simple thumbnail URL generation (no API call)
+                    project.thumbnailUrl = `https://drive.google.com/thumbnail?id=${project.driveFolderId}&sz=w800`;
                 }
 
                 return project;

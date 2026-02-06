@@ -19,8 +19,18 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'drive.google.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.univetbantara.ac.id', // Allow all subdomains
+      },
+      {
+        protocol: 'https',
+        hostname: '**', // Allow all HTTPS domains (permissive for user uploads)
       }
     ],
+    // Allow unoptimized images for external sources
+    unoptimized: false,
   },
 };
 

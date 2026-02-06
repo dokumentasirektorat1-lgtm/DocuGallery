@@ -47,7 +47,7 @@ export function AdminForm({ initialData, onSubmit, onCancel, isEditing = false }
         }
     }, [initialData])
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
 
         let finalThumbnail = ""
@@ -56,8 +56,18 @@ export function AdminForm({ initialData, onSubmit, onCancel, isEditing = false }
             // Auto convert if it looks like a drive file link
             finalThumbnail = convertDriveToThumbnail(thumbnailInput)
         } else if (thumbnailType === "auto" && !isFacebook) {
-            // Auto-generate from Drive folder ID
-            finalThumbnail = generateDriveThumbnail(driveLink)
+            // Extract folder ID first
+            const folderId = extractDriveFolderId(driveLink) || driveLink
+
+            // Try to fetch auto-thumbnail from Drive API
+            try {
+                const { getAutoThumbnail } = await import("@/lib/autoThumbnail")
+                console.log('🔄 Fetching auto-thumbnail via Drive API...')
+                finalThumbnail = await getAutoThumbnail(folderId)
+            } catch (error) {
+                console.error('Failed to fetch auto-thumbnail, using fallback:', error)
+                finalThumbnail = generateDriveThumbnail(driveLink)
+            }
         }
 
         // Extract folder ID or keep full link for Facebook

@@ -1,138 +1,111 @@
-# DisplayDokumentasi
+# DocuGallery - Enterprise Documentation & Gallery Platform
 
-A modern documentation gallery web application built with Next.js 14, Firebase, and TypeScript.
+Production-ready Next.js application for managing and displaying documentation galleries with Firebase integration.
 
-## Features
+## 🚀 Features
 
-- 🎨 Modern, responsive UI with dark mode support
-- 🔐 Firebase Authentication (Email, Google SSO)
-- 📁 Google Drive & Facebook content integration
-- 🖼️ Auto-thumbnail generation from Drive
-- 👥 User management with role-based access (Admin/User)
-- 🔒 Private/Public content control
-- 📊 Admin dashboard with CRUD operations
-- 🎯 Dynamic branding (logo, favicon, titles)
-- 📱 Fully responsive design
-- 🌙 Dark/Light theme toggle
+- **Authentication System** - Firebase Auth with role-based access (Admin/User)
+- **Gallery Management** - Display projects with filtering, search, and pagination
+- **Auto-Thumbnail** - Intelligent image selection from Google Drive folders
+- **Admin Dashboard** - Manage projects, users, and settings
+- **CSV Import** - Bulk import projects from CSV files
+- **Dynamic Branding** - Customizable logo, favicon, and footer
+- **Dark Mode** - Full dark mode support
+- **Responsive Design** - Mobile-first responsive UI
 
-## Tech Stack
-
-- **Framework:** Next.js 14 (App Router)
-- **Language:** TypeScript
-- **Styling:** Tailwind CSS
-- **Database:** Firebase Firestore
-- **Authentication:** Firebase Auth
-- **Icons:** Material Symbols
-- **UI Components:** Custom components with Tailwind
-
-## Getting Started
-
-### Prerequisites
+## 📋 Prerequisites
 
 - Node.js 18+ 
-- npm or yarn
 - Firebase project
+- Google Drive API key (for auto-thumbnails)
 
-### Installation
+## 🛠️ Installation
 
-1. Clone the repository:
+1. **Clone the repository**
 ```bash
 git clone <your-repo-url>
 cd DisplayDokumentasi
 ```
 
-2. Install dependencies:
+2. **Install dependencies**
 ```bash
 npm install
 ```
 
-3. Create `.env.local` file in root directory:
+3. **Configure environment variables**
+```bash
+cp .env.example .env.local
+```
+
+Edit `.env.local` with your actual credentials:
 ```env
-NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_auth_domain
+NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
 NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
 NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_storage_bucket
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+NEXT_PUBLIC_GOOGLE_DRIVE_API_KEY=your_drive_api_key
 ```
 
-4. Run the development server:
+4. **Run development server**
 ```bash
 npm run dev
 ```
 
-5. Open [http://localhost:3000](http://localhost:3000) in your browser.
+Open [http://localhost:3000](http://localhost:3000)
 
-## Project Structure
+## 📦 Build for Production
 
-```
-DisplayDokumentasi/
-├── app/                    # Next.js app directory
-│   ├── admin/             # Admin dashboard pages
-│   ├── login/             # Authentication pages
-│   ├── project/           # Project detail pages
-│   └── page.tsx           # Home page
-├── components/            # React components
-├── context/               # React context providers
-├── lib/                   # Utility functions & Firebase config
-└── public/               # Static assets
-```
-
-## Firebase Setup
-
-1. Create a Firebase project at [Firebase Console](https://console.firebase.google.com)
-2. Enable Authentication (Email/Password and Google)
-3. Create Firestore Database
-4. Add your Firebase config to `.env.local`
-
-### Firestore Collections
-
-- `projects` - Documentation projects
-- `users` - User profiles and roles
-- `settings` - App configuration
-
-## Deployment
-
-### Vercel (Recommended)
-
-1. Push your code to GitHub
-2. Import project in [Vercel](https://vercel.com)
-3. Add environment variables
-4. Deploy!
-
-### Other Platforms
-
-Build the production version:
 ```bash
 npm run build
 npm start
 ```
 
-## Environment Variables
+## 🌐 Deploy to Vercel
 
-Required environment variables:
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone)
 
-- `NEXT_PUBLIC_FIREBASE_API_KEY` - Firebase API key
-- `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` - Firebase auth domain
-- `NEXT_PUBLIC_FIREBASE_PROJECT_ID` - Firebase project ID
-- `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET` - Firebase storage bucket
-- `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` - Firebase messaging sender ID
-- `NEXT_PUBLIC_FIREBASE_APP_ID` - Firebase app ID
+### Environment Variables for Vercel
 
-## Contributing
+Add these in Vercel dashboard → Settings → Environment Variables:
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+```
+NEXT_PUBLIC_FIREBASE_API_KEY
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+NEXT_PUBLIC_FIREBASE_PROJECT_ID
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+NEXT_PUBLIC_FIREBASE_APP_ID
+NEXT_PUBLIC_GOOGLE_DRIVE_API_KEY
+```
 
-## License
+## 📚 Documentation
 
-This project is licensed under the MIT License.
+- [Pagination Guide](PAGINATION_GUIDE.md)
+- [Visual Optimization](VISUAL_OPTIMIZATION_GUIDE.md)
+- [Auto-Thumbnail Guide](AUTO_THUMBNAIL_GUIDE.md)
+- [Bug Fixes Summary](BUGFIX_FOOTER_SUMMARY.md)
 
-## Author
+## 🔒 Security
 
-Your Name
+- All sensitive credentials use environment variables
+- Firebase security rules enforce authentication
+- Admin routes protected with role-based access
+- `.env.local` excluded from git
 
-## Acknowledgments
+## 📄 License
 
-- Next.js team for the amazing framework
-- Firebase for backend services
-- Tailwind CSS for styling utilities
+MIT License
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open Pull Request
+
+---
+
+Built with ❤️ using Next.js, Firebase, and TypeScript

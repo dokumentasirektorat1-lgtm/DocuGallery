@@ -9,6 +9,7 @@ import { Navbar } from "@/components/Navbar";
 import { Toaster } from "react-hot-toast";
 import { DynamicHead } from "@/components/DynamicHead";
 import { DynamicBranding } from "@/components/DynamicBranding";
+import { Footer } from "@/components/Footer";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -31,7 +32,7 @@ export default function RootLayout({
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=block" />
       </head>
       <body
-        className={`${inter.variable} font-sans antialiased bg-background text-foreground`}
+        className={`${inter.variable} font-sans antialiased bg-background text-foreground flex flex-col min-h-screen`}
       >
         <ThemeProvider
           attribute="class"
@@ -45,9 +46,10 @@ export default function RootLayout({
                 <DynamicHead />
                 <DynamicBranding />
                 <Navbar />
-                <main className="min-h-screen transition-colors duration-300">
+                <main className="flex-1 transition-colors duration-300">
                   {children}
                 </main>
+                <Footer />
                 <Toaster
                   position="top-right"
                   toastOptions={{

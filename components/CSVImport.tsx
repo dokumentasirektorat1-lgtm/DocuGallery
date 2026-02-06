@@ -56,17 +56,15 @@ export function CSVImport({ onComplete }: CSVImportProps) {
             const projectsRef = collection(db, "projects")
             let successCount = 0
 
+            // Import getAutoThumbnail
+            const { getAutoThumbnail } = await import("@/lib/autoThumbnail")
+
             for (const [index, row] of rows.entries()) {
                 setProgress(`Processing ${index + 1}/${rows.length}...`)
 
                 // Map CSV columns to project fields
                 const driveLink = row["Link Dokumentasi"] || row["Drive Link"] || ""
                 let thumbnailUrl = row["Thumbnail"] || row["thumbnailUrl"] || ""
-
-                // Auto-generate thumbnail if empty and it's a Drive link
-                if (!thumbnailUrl && driveLink && !isFacebookLink(driveLink)) {
-                    thumbnailUrl = generateDriveThumbnail(driveLink)
-                }
 
                 // Detect content type
                 const contentType = isFacebookLink(driveLink) ? "facebook" : "drive"
@@ -76,6 +74,19 @@ export function CSVImport({ onComplete }: CSVImportProps) {
                 if (contentType === "drive") {
                     const extractedId = extractDriveFolderId(driveLink)
                     driveFolderId = extractedId || driveLink
+                }
+
+                // Auto-generate thumbnail if empty and it's a Drive link
+                if (!thumbnailUrl && driveFolderId && contentType === "drive") {
+                    console.log(`🔄 [CSV Row ${index + 1}] Fetching auto-thumbnail for: ${driveFolderId}`)
+                    try {
+                        thumbnailUrl = await getAutoThumbnail(driveFolderId)
+                        console.log(`✅ [CSV Row ${index + 1}] Got thumbnail: ${thumbnailUrl}`)
+                    } catch (error) {
+                        console.error(`❌ [CSV Row ${index + 1}] Failed to fetch auto-thumbnail:`, error)
+                        // Fallback to simple generator
+                        thumbnailUrl = generateDriveThumbnail(driveLink)
+                    }
                 }
 
                 const project = {

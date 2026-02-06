@@ -1,79 +1,197 @@
-/**
- * Improved Drive thumbnail generation with multiple fallback strategies
- */
-
-import { MediaFolder } from "./data";
+import { GOOGLE_DRIVE_API_KEY, DRIVE_API_BASE, convertToDriveDirectLink } from "./driveConfig"
 
 /**
- * Extract Google Drive file/folder ID from various URL formats
+ * Image file metadata from Drive API
  */
-function extractDriveId(url: string): string | null {
-    if (!url) return null;
-
-    // Pattern 1: /file/d/FILE_ID
-    const fileMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-    if (fileMatch) return fileMatch[1];
-
-    // Pattern 2: /folders/FOLDER_ID
-    const folderMatch = url.match(/\/folders\/([a-zA-Z0-9_-]+)/);
-    if (folderMatch) return folderMatch[1];
-
-    // Pattern 3: /open?id=ID or &id=ID
-    const idMatch = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-    if (idMatch) return idMatch[1];
-
-    // Pattern 4: /d/ID (shortened format)
-    const shortMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
-    if (shortMatch) return shortMatch[1];
-
-    return null;
+interface DriveImageFile {
+    id: string
+    name: string
+    thumbnailLink?: string
+    webContentLink?: string
+    imageMediaMetadata?: {
+        width?: number
+        height?: number
+    }
+    size?: string // File size in bytes (as string)
 }
 
 /**
- * Generate thumbnail URL from Drive ID with multiple size options
+ * Get auto-generated thumbnail from Google Drive folder with BEST VISUAL PICKER
+ * Intelligently selects the best image based on:
+ * 1. Filename keywords (cover, thumb, main, thumbnail)
+ * 2. Highest resolution (width x height)
+ * 3. Largest file size
+ * 
+ * @param folderId - Google Drive folder ID
+ * @returns Promise<string> - Thumbnail URL or empty string
  */
-export function generateDriveThumbnail(driveIdOrUrl: string, size: number = 500): string {
-    const driveId = extractDriveId(driveIdOrUrl) || driveIdOrUrl;
+export async function getAutoThumbnail(folderId: string): Promise<string> {
+    if (!folderId) return ""
 
-    if (!driveId) return "";
+    try {
+        // Build API URL to search for ALL images in the folder with metadata
+        const query = `'${folderId}' in parents and mimeType contains 'image/'`
+        const fields = "files(id,name,thumbnailLink,webContentLink,imageMediaMetadata,size)"
+        const apiUrl = `${DRIVE_API_BASE}/files?q=${encodeURIComponent(query)}&fields=${fields}&key=${GOOGLE_DRIVE_API_KEY}&pageSize=50&orderBy=createdTime desc`
 
-    // Try multiple thumbnail endpoints for better success rate
-    // Primary: Google Drive thumbnail API
-    return `https://drive.google.com/thumbnail?id=${driveId}&sz=w${size}`;
+        console.log('🔍 Fetching images from Drive API for best visual picker:', folderId)
 
-    // Alternatives that could be used as fallbacks:
-    // return `https://lh3.googleusercontent.com/d/${driveId}=w${size}`;
-    // return `https://drive.google.com/uc?export=view&id=${driveId}`;
+        const response = await fetch(apiUrl)
+
+        if (!response.ok) {
+            console.error('❌ Drive API error:', response.status, response.statusText)
+            return getPlaceholderThumbnail()
+        }
+
+        const data = await response.json()
+
+        // Check if any images were found
+        if (data.files && data.files.length > 0) {
+            const images: DriveImageFile[] = data.files
+
+            console.log(`📸 Found ${images.length} images in folder`)
+
+            // BEST VISUAL PICKER LOGIC
+            const bestImage = selectBestImage(images)
+
+            if (bestImage) {
+                console.log(`🏆 Best image selected: ${bestImage.name}`)
+                return generateThumbnailUrl(bestImage)
+            }
+        }
+
+        // No images found in folder
+        console.log('⚠️ No images found in folder:', folderId)
+        return getPlaceholderThumbnail()
+
+    } catch (error) {
+        console.error('❌ Error fetching auto-thumbnail:', error)
+        return getPlaceholderThumbnail()
+    }
 }
 
 /**
- * Generate auto-thumbnail for a project if it doesn't have one
- * @param project - Media folder project
- * @returns Generated thumbnail URL or empty string
+ * Select the best image from array based on intelligent criteria
+ * Priority:
+ * 1. Filename contains keywords (cover, thumb, main, thumbnail, hero)
+ * 2. Highest resolution
+ * 3. Largest file size
  */
-export function generateAutoThumbnail(project: MediaFolder): string {
-    // If already has thumbnail, return it
-    if (project.thumbnailUrl) {
-        return project.thumbnailUrl;
+function selectBestImage(images: DriveImageFile[]): DriveImageFile | null {
+    if (images.length === 0) return null
+    if (images.length === 1) return images[0]
+
+    // Priority 1: Check for keyword matches in filename
+    const keywords = ['cover', 'thumb', 'main', 'thumbnail', 'hero', 'feature', 'banner']
+    for (const keyword of keywords) {
+        const keywordMatch = images.find(img =>
+            img.name.toLowerCase().includes(keyword)
+        )
+        if (keywordMatch) {
+            console.log(`✨ Found keyword match: "${keyword}" in ${keywordMatch.name}`)
+            return keywordMatch
+        }
     }
 
-    // For Drive content, generate thumbnail from folder ID
-    if (project.contentType === "drive" && project.driveFolderId) {
-        return generateDriveThumbnail(project.driveFolderId, 400);
+    // Priority 2: Select by highest resolution (width x height)
+    const imagesWithResolution = images.filter(img =>
+        img.imageMediaMetadata?.width && img.imageMediaMetadata?.height
+    )
+
+    if (imagesWithResolution.length > 0) {
+        const highestRes = imagesWithResolution.reduce((best, current) => {
+            const bestPixels = (best.imageMediaMetadata?.width || 0) * (best.imageMediaMetadata?.height || 0)
+            const currentPixels = (current.imageMediaMetadata?.width || 0) * (current.imageMediaMetadata?.height || 0)
+
+            if (currentPixels > bestPixels) {
+                console.log(`🎯 Higher resolution found: ${current.name} (${current.imageMediaMetadata?.width}x${current.imageMediaMetadata?.height})`)
+                return current
+            }
+            return best
+        })
+
+        return highestRes
     }
 
-    // For Facebook content, return empty (will show Facebook icon as fallback)
-    if (project.contentType === "facebook") {
-        return "";
+    // Priority 3: Select by largest file size
+    const imagesWithSize = images.filter(img => img.size)
+
+    if (imagesWithSize.length > 0) {
+        const largest = imagesWithSize.reduce((best, current) => {
+            const bestSize = parseInt(best.size || '0')
+            const currentSize = parseInt(current.size || '0')
+
+            if (currentSize > bestSize) {
+                console.log(`📊 Larger file found: ${current.name} (${formatBytes(currentSize)})`)
+                return current
+            }
+            return best
+        })
+
+        return largest
     }
 
-    // No automatic thumbnail available
-    return "";
+    // Fallback: return first image
+    console.log(`🔄 Using first image as fallback: ${images[0].name}`)
+    return images[0]
 }
 
 /**
- * Check if a project needs auto-thumbnail generation
+ * Generate high-quality thumbnail URL from selected image
+ * Uses sz=w1000 for sharp, non-pixelated display
  */
-export function needsAutoThumbnail(project: MediaFolder): boolean {
-    return !project.thumbnailUrl && project.contentType === "drive" && !!project.driveFolderId;
+function generateThumbnailUrl(image: DriveImageFile): string {
+    // Priority 1: Use thumbnailLink with high quality
+    if (image.thumbnailLink) {
+        // Replace default size with w1000 for maximum quality
+        const highQualityThumb = image.thumbnailLink.replace(/=s\d+/, '=s1000')
+        console.log('📌 Using high-quality thumbnailLink (w1000)')
+        return highQualityThumb
+    }
+
+    // Priority 2: Use file ID to generate thumbnail
+    console.log('📌 Using generated thumbnail URL (sz=w1000)')
+    return `https://drive.google.com/thumbnail?id=${image.id}&sz=w1000`
+}
+
+/**
+ * Format bytes to human-readable string
+ */
+function formatBytes(bytes: number): string {
+    if (bytes === 0) return '0 Bytes'
+    const k = 1024
+    const sizes = ['Bytes', 'KB', 'MB', 'GB']
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i]
+}
+
+/**
+ * Get placeholder thumbnail when no image is available
+ * @returns Default placeholder image URL
+ */
+function getPlaceholderThumbnail(): string {
+    // Use a professional placeholder from Unsplash
+    return "https://images.unsplash.com/photo-1557683316-973673baf926?w=800&h=600&fit=crop"
+}
+
+/**
+ * Synchronous thumbnail generation (fallback)
+ * Uses standard Drive thumbnail endpoint with w1000 quality
+ * 
+ * @param folderId - Google Drive folder ID
+ * @returns Thumbnail URL
+ */
+export function getQuickThumbnail(folderId: string): string {
+    if (!folderId) return getPlaceholderThumbnail()
+    return `https://drive.google.com/thumbnail?id=${folderId}&sz=w1000`
+}
+
+/**
+ * Validate if Drive folder ID is valid format
+ * @param folderId - Folder ID to validate
+ * @returns boolean
+ */
+export function isValidDriveFolderId(folderId: string): boolean {
+    // Drive IDs are typically 33 characters alphanumeric with hyphens/underscores
+    return /^[a-zA-Z0-9_-]{20,50}$/.test(folderId)
 }
