@@ -62,11 +62,13 @@ export async function getAutoThumbnail(folderId: string): Promise<string> {
 
         // No images found in folder
         console.log('⚠️ No images found in folder:', folderId)
-        return getPlaceholderThumbnail()
+        // Fallback: Use folder thumbnail directly
+        return `https://drive.google.com/thumbnail?id=${folderId}&sz=w500`
 
     } catch (error) {
         console.error('❌ Error fetching auto-thumbnail:', error)
-        return getPlaceholderThumbnail()
+        // Fallback: Use folder thumbnail directly on error
+        return `https://drive.google.com/thumbnail?id=${folderId}&sz=w500`
     }
 }
 

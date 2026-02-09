@@ -8,8 +8,10 @@ export interface MediaFolder {
     driveFolderId: string;
     isPrivate: boolean;
     status?: "Synced" | "Indexing" | "Error";
-    contentType?: "drive" | "facebook"; // NEW: Platform type
-    postType?: "post" | "video"; // NEW: For Facebook content
+    contentType?: "drive" | "facebook"; // Platform type
+    postType?: "post" | "video"; // For Facebook content
+    createdAt?: any; // Firestore Timestamp - when first created
+    updatedAt?: any; // Firestore Timestamp - last modified
 }
 
 export const folders: MediaFolder[] = [

@@ -12,7 +12,8 @@ import {
     doc,
     query,
     getDocs,
-    writeBatch
+    writeBatch,
+    serverTimestamp
 } from "firebase/firestore";
 
 interface DataContextType {
@@ -137,6 +138,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
             isPrivate: data.isPrivate ?? false,
             status: data.status || "Synced",
             contentType: data.contentType || "drive",
+            createdAt: serverTimestamp(), // Set creation timestamp
+            updatedAt: serverTimestamp(), // Set initial update timestamp
         };
 
         // Only add postType if it exists
@@ -151,7 +154,10 @@ export function DataProvider({ children }: { children: ReactNode }) {
         const docRef = doc(db, "projects", id);
 
         // Clean data to remove undefined fields
-        const cleanData: any = {};
+        const cleanData: any = {
+            updatedAt: serverTimestamp() // Always set updatedAt on update
+        };
+
         Object.keys(data).forEach(key => {
             const value = data[key as keyof Partial<MediaFolder>];
             if (value !== undefined) {

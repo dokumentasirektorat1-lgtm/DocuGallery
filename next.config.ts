@@ -2,6 +2,21 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: process.env.NODE_ENV === 'development'
+              ? "script-src 'self' 'unsafe-eval' 'unsafe-inline'; object-src 'self';"
+              : "script-src 'self' 'unsafe-inline'; object-src 'self';",
+          },
+        ],
+      },
+    ];
+  },
   images: {
     remotePatterns: [
       {

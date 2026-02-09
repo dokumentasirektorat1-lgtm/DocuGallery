@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import "./scrollbar.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/context/AuthContext";
 import { SettingsProvider } from "@/context/SettingsContext";
@@ -30,6 +31,8 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=block" />
+        {/* Hardcoded Favicon - Google Drive Thumbnail */}
+        <link rel="icon" href="https://drive.google.com/thumbnail?id=1XqYHNYhV6iQonUzomAdJpCdxjjiy8W3I&sz=w64" />
       </head>
       <body
         className={`${inter.variable} font-sans antialiased bg-background text-foreground flex flex-col min-h-screen`}

@@ -65,7 +65,7 @@ export default function AccessRequestsPage() {
                 <AdminSidebar />
 
                 <div className="lg:pl-64 transition-all duration-300">
-                    <div className="p-8 max-w-7xl mx-auto">
+                    <div className="p-4 md:p-8 max-w-7xl mx-auto">
                         <header className="mb-8">
                             <h1 className="text-2xl font-bold text-foreground">Access Requests</h1>
                             <p className="text-gray-500">Review and manage user access requests.</p>
@@ -75,8 +75,8 @@ export default function AccessRequestsPage() {
                             {/* Pending Requests Section */}
                             <div>
                                 <h2 className="font-semibold text-lg mb-4">Pending Requests ({pendingUsers.length})</h2>
-                                <div className="overflow-hidden rounded-xl border border-border bg-surface shadow-sm">
-                                    <table className="w-full text-left text-sm">
+                                <div className="w-full overflow-x-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-200 dark:scrollbar-track-gray-800 shadow-inner rounded-xl border border-border bg-surface">
+                                    <table className="w-full text-left text-sm" style={{ minWidth: '700px' }}>
                                         <thead className="bg-gray-50 dark:bg-gray-800/50 text-gray-500 font-medium">
                                             <tr>
                                                 <th className="px-6 py-4">Name</th>
@@ -130,8 +130,8 @@ export default function AccessRequestsPage() {
                             {/* All Users Section */}
                             <div>
                                 <h2 className="font-semibold text-lg mb-4">All Users ({users.length})</h2>
-                                <div className="overflow-hidden rounded-xl border border-border bg-surface shadow-sm">
-                                    <table className="w-full text-left text-sm">
+                                <div className="w-full overflow-x-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-200 dark:scrollbar-track-gray-800 shadow-inner rounded-xl border border-border bg-surface">
+                                    <table className="w-full text-left text-sm" style={{ minWidth: '700px' }}>
                                         <thead className="bg-gray-50 dark:bg-gray-800/50 text-gray-500 font-medium">
                                             <tr>
                                                 <th className="px-6 py-4">Name</th>

@@ -59,8 +59,8 @@ export function formatFaviconUrl(url: string): string {
             const match = url.match(pattern)
             if (match) {
                 const fileId = match[1]
-                // Convert to direct download link - works for favicon
-                return `https://drive.google.com/uc?export=view&id=${fileId}`
+                // FIXED: Use thumbnail link for better performance and format
+                return `https://drive.google.com/thumbnail?id=${fileId}&sz=w64`
             }
         }
     }

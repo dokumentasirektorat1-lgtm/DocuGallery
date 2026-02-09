@@ -161,8 +161,8 @@ export default function Home() {
                                             key={pageNum}
                                             onClick={() => setCurrentPage(pageNum)}
                                             className={`w-10 h-10 rounded-lg transition-colors ${currentPage === pageNum
-                                                    ? 'bg-primary text-white'
-                                                    : 'border border-border bg-surface hover:bg-primary/10'
+                                                ? 'bg-primary text-white'
+                                                : 'border border-border bg-surface hover:bg-primary/10'
                                                 }`}
                                         >
                                             {pageNum}

@@ -37,7 +37,7 @@ export function AdminSidebar() {
         .slice(0, 2) || 'AD'
 
     return (
-        <aside className="w-64 fixed left-0 top-16 bottom-0 border-r border-border bg-background z-40 hidden lg:block p-6">
+        <aside className="w-64 lg:fixed lg:left-0 lg:top-16 lg:bottom-0 border-r border-border bg-background z-50 hidden lg:block p-6 lg:overflow-y-auto">
             <div className="mb-8 px-4">
                 <h2 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Admin Panel</h2>
             </div>
@@ -50,7 +50,7 @@ export function AdminSidebar() {
                             key={link.name}
                             href={link.href}
                             className={cn(
-                                "flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-colors",
+                                "flex items-center gap-3 px-4 py-3 text-sm md:text-base font-medium rounded-xl transition-colors min-h-[44px]",
                                 isActive
                                     ? "bg-primary/10 text-primary"
                                     : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
@@ -77,8 +77,9 @@ export function AdminSidebar() {
                     </div>
                     <button
                         onClick={handleLogout}
-                        className="text-gray-400 hover:text-foreground transition-colors"
+                        className="text-gray-400 hover:text-foreground transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
                         title="Logout"
+                        aria-label="Logout"
                     >
                         <span className="material-symbols-outlined text-[20px]">logout</span>
                     </button>
