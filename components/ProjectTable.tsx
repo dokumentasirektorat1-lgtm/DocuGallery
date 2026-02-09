@@ -136,6 +136,72 @@ export function ProjectTable({ projects, onEdit, onDelete, onBulkDelete }: Proje
 
     return (
         <>
+            {/* Pagination Controls - Above Table */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 dark:bg-gray-800/50 rounded-t-xl border-x border-t border-border">
+                <div className="flex items-center gap-2 text-sm text-muted">
+                    <span className="font-medium">{sortedProjects.length}</span>
+                    <span>total projects</span>
+                    {sortedProjects.length > 0 && (
+                        <>
+                            <span className="text-gray-400">•</span>
+                            <span>Page {currentPage} of {totalPages}</span>
+                        </>
+                    )}
+                </div>
+    
+                <div className="flex items-center gap-2">
+                    {/* First Page */}
+                    <button
+                        onClick={() => setCurrentPage(1)}
+                        disabled={currentPage === 1}
+                        className="p-2 rounded-lg border border-border bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors min-w-[36px] min-h-[36px] flex items-center justify-center"
+                        title="First page"
+                    >
+                        <span className="material-symbols-outlined text-[18px]">first_page</span>
+                    </button>
+        
+                    {/* Previous */}
+                    <button
+                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                        disabled={currentPage === 1}
+                        className="p-2 rounded-lg border border-border bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors min-w-[36px] min-h-[36px] flex items-center justify-center"
+                        title="Previous page"
+                    >
+                        <span className="material-symbols-outlined text-[18px]">chevron_left</span>
+                    </button>
+        
+                    {/* Page Indicator */}
+                    <div className="px-3 sm:px-4 py-2 bg-primary text-white rounded-lg font-semibold text-sm min-w-[60px] sm:min-w-[80px] text-center">
+                        {currentPage} / {totalPages || 1}
+                    </div>
+        
+                    {/* Next */}
+                    <button
+                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                        disabled={currentPage === totalPages || totalPages === 0}
+                        className="p-2 rounded-lg border border-border bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors min-w-[36px] min-h-[36px] flex items-center justify-center"
+                        title="Next page"
+                    >
+                        <span className="material-symbols-outlined text-[18px]">chevron_right</span>
+                    </button>
+        
+                    {/* Last Page */}
+                    <button
+                        onClick={() => setCurrentPage(totalPages)}
+                        disabled={currentPage === totalPages || totalPages === 0}
+                        className="p-2 rounded-lg border border-border bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors min-w-[36px] min-h-[36px] flex items-center justify-center"
+                        title="Last page"
+                    >
+                        <span className="material-symbols-outlined text-[18px]">last_page</span>
+                    </button>
+                </div>
+            </div>
+
+
+
+
+
+
             <div className="overflow-x-auto">
                 <div className="overflow-hidden rounded-xl border border-border bg-surface shadow-sm">
                     <table className="w-full text-left text-sm min-w-[900px]">

@@ -61,27 +61,50 @@ export default function AdminPage() {
         }
     }
 
+    const handleDelete = async (id: string) => {
+        await deleteProject(id)
+    }
+
+    const handleBulkDelete = async (ids: string[]) => {
+        for (const id of ids) {
+            await deleteProject(id)
+        }
+    }
+
     return (
         <ProtectedRoute>
             <div className="min-h-screen bg-background">
                 <AdminSidebar />
 
                 <div className="lg:pl-64 transition-all duration-300">
-                    <div className="p-8 max-w-7xl mx-auto">
-                        <div className="flex items-center justify-between mb-8">
-                            <header>
-                                <h1 className="text-2xl font-bold text-foreground">Project Manager</h1>
-                                <p className="text-gray-500">Manage gallery content and documentation.</p>
-                            </header>
-                            <div className="flex items-center gap-3">
-                                <button
-                                    onClick={handleAddNew}
-                                    className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-cyan-600 text-white font-medium rounded-xl transition-colors shadow-lg shadow-cyan-500/25"
-                                >
-                                    <span className="material-symbols-outlined text-[20px]">add</span>
-                                    <span>Add Item</span>
-                                </button>
-                                <CSVImport onComplete={() => window.location.reload()} />
+                    <div className="p-4 sm:p-6 md:p-8 max-w-7xl mx-auto">
+                        {/* Modern Header - Text Above Buttons on Mobile */}
+                        <div className="bg-gradient-to-r from-primary/5 via-primary/10 to-transparent dark:from-primary/10 dark:via-primary/20 dark:to-transparent rounded-2xl p-4 sm:p-6 md:p-8 mb-6 sm:mb-8 border border-primary/10">
+                            <div className="flex flex-col gap-4 sm:gap-6">
+                                {/* Title Section - Always Full Width on Top */}
+                                <div className="space-y-2">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-9 h-9 sm:w-10 sm:h-10 bg-primary rounded-lg flex items-center justify-center shadow-lg shadow-primary/25 flex-shrink-0">
+                                            <span className="material-symbols-outlined text-white text-[20px] sm:text-[24px]">dashboard</span>
+                                        </div>
+                                        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground">Project Manager</h1>
+                                    </div>
+                                    <p className="text-sm sm:text-base text-muted pl-0 sm:pl-[52px]">
+                                        Manage your media content and documentation
+                                    </p>
+                                </div>
+
+                                {/* Action Buttons - Below Title on Mobile, Auto on Desktop */}
+                                <div className="flex flex-col xs:flex-row items-stretch xs:items-center gap-2 sm:gap-3">
+                                    <button
+                                        onClick={handleAddNew}
+                                        className="flex items-center justify-center gap-2 px-4 py-2.5 bg-primary hover:bg-cyan-600 text-white font-medium rounded-lg transition-colors shadow-lg shadow-primary/25 text-sm min-h-[44px]"
+                                    >
+                                        <span className="material-symbols-outlined text-[18px]">add</span>
+                                        <span>Add Item</span>
+                                    </button>
+                                    <CSVImport onComplete={() => window.location.reload()} />
+                                </div>
                             </div>
                         </div>
 
