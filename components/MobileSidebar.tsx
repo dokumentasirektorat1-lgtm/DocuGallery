@@ -69,13 +69,23 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
 
     return (
         <>
-            {/* Full Screen Sidebar - Solid Background (NO Transparency) */}
+            {/* Backdrop - Full Coverage */}
+            {isOpen && (
+                <div
+                    className="fixed inset-0 w-screen h-screen bg-black/50 z-[9998] lg:hidden"
+                    onClick={onClose}
+                    aria-hidden="true"
+                />
+            )}
+
+            {/* Full Screen Sidebar - 100% Solid, NO Transparency */}
             <aside
                 className={cn(
-                    "fixed inset-0 w-full h-full bg-white dark:bg-gray-900 z-[9999] lg:hidden",
+                    "fixed inset-0 w-screen h-screen bg-white dark:bg-gray-900 z-[9999] lg:hidden",
                     "flex flex-col",
-                    "transition-all duration-300 ease-in-out",
-                    isOpen ? "translate-x-0 opacity-100" : "-translate-x-full opacity-0"
+                    "overflow-y-auto overscroll-contain",
+                    "transition-transform duration-300 ease-in-out",
+                    isOpen ? "translate-x-0" : "-translate-x-full"
                 )}
             >
                 {/* Header with Logo & Close */}
@@ -161,11 +171,11 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
                     </Link>
                 </nav>
 
-                {/* BIG SPACER - Pushes user section to bottom (30-60% of screen) */}
-                <div className="flex-1 min-h-[30vh]"></div>
+                {/* BIG SPACER - Solid BG, No Transparency (30-60% of screen) */}
+                <div className="flex-1 min-h-[30vh] bg-white dark:bg-gray-900"></div>
 
-                {/* User Info & Logout - Pinned to Bottom with Safe Area */}
-                <div className="flex-shrink-0 p-4 pb-safe border-t border-gray-200 dark:border-gray-800 space-y-3 bg-gray-50 dark:bg-gray-800">
+                {/* User Info & Logout - ABSOLUTE BOTTOM (menempel ke bawah layar) */}
+                <div className="flex-shrink-0 p-4 pb-4 border-t border-gray-200 dark:border-gray-800 space-y-3 bg-gray-50 dark:bg-gray-800">
                     {/* User Card - Compact */}
                     <div className="flex items-center gap-3 p-2.5 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
                         <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-white font-bold text-sm shadow-md flex-shrink-0">
