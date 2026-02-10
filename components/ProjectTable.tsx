@@ -202,7 +202,8 @@ export function ProjectTable({ projects, onEdit, onDelete, onBulkDelete }: Proje
 
 
 
-            <div className="overflow-x-auto">
+            {/* Table Container - Improved Mobile Scroll */}
+            <div className="overflow-x-auto overflow-y-visible pb-2 scrollbar-thin scrollbar-thumb-primary/60 scrollbar-track-gray-200 dark:scrollbar-track-gray-800 hover:scrollbar-thumb-primary/80" style={{ WebkitOverflowScrolling: 'touch' }}>
                 <div className="overflow-hidden rounded-xl border border-border bg-surface shadow-sm">
                     <table className="w-full text-left text-sm min-w-[900px]">
                         <thead className="bg-gray-50 dark:bg-gray-800/50 text-gray-500 font-medium">

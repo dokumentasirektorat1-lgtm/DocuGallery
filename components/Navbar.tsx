@@ -3,6 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
+import { usePathname } from "next/navigation"
 import { ThemeToggle } from "./ThemeToggle"
 import { MobileSidebar } from "./MobileSidebar"
 import { useAuth } from "@/context/AuthContext"
@@ -13,17 +14,22 @@ import { getDirectLink } from "@/lib/utils"
 export function Navbar() {
     const { user, userData } = useAuth();
     const { appName, appLogo } = useSettings();
+    const pathname = usePathname();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     // Convert Drive links to direct viewable links
     const displayLogo = getDirectLink(appLogo);
 
+    // Show hamburger menu only for admin AND when in admin pages
+    const isAdminPage = pathname?.startsWith('/admin');
+    const showHamburger = userData?.role === "admin" && isAdminPage;
+
     return (
         <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-md">
             <div className="container mx-auto px-4 h-16 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    {/* Hamburger Menu - Admin Only, Mobile Only */}
-                    {userData?.role === "admin" && (
+                    {/* Hamburger Menu - Admin Only, Admin Pages Only, Mobile Only */}
+                    {showHamburger && (
                         <button
                             onClick={() => setMobileMenuOpen(true)}
                             className="lg:hidden p-2 min-w-[44px] min-h-[44px] hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center justify-center"
@@ -81,8 +87,8 @@ export function Navbar() {
                 </div>
             </div>
 
-            {/* Mobile Sidebar */}
-            {userData?.role === "admin" && (
+            {/* Mobile Sidebar - Only in Admin Pages */}
+            {showHamburger && (
                 <MobileSidebar isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
             )}
         </nav>
