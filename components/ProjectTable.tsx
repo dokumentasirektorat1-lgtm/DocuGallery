@@ -148,48 +148,48 @@ export function ProjectTable({ projects, onEdit, onDelete, onBulkDelete }: Proje
                         </>
                     )}
                 </div>
-    
+
                 <div className="flex items-center gap-2">
                     {/* First Page */}
                     <button
                         onClick={() => setCurrentPage(1)}
                         disabled={currentPage === 1}
-                        className="p-2 rounded-lg border border-border bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors min-w-[36px] min-h-[36px] flex items-center justify-center"
+                        className="p-2 rounded-lg border border-border bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors min-w-[36px] min-h-[36px] flex items-center justify-center text-gray-700 dark:text-gray-200"
                         title="First page"
                     >
                         <span className="material-symbols-outlined text-[18px]">first_page</span>
                     </button>
-        
+
                     {/* Previous */}
                     <button
                         onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                         disabled={currentPage === 1}
-                        className="p-2 rounded-lg border border-border bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors min-w-[36px] min-h-[36px] flex items-center justify-center"
+                        className="p-2 rounded-lg border border-border bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors min-w-[36px] min-h-[36px] flex items-center justify-center text-gray-700 dark:text-gray-200"
                         title="Previous page"
                     >
                         <span className="material-symbols-outlined text-[18px]">chevron_left</span>
                     </button>
-        
+
                     {/* Page Indicator */}
                     <div className="px-3 sm:px-4 py-2 bg-primary text-white rounded-lg font-semibold text-sm min-w-[60px] sm:min-w-[80px] text-center">
                         {currentPage} / {totalPages || 1}
                     </div>
-        
+
                     {/* Next */}
                     <button
                         onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                         disabled={currentPage === totalPages || totalPages === 0}
-                        className="p-2 rounded-lg border border-border bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors min-w-[36px] min-h-[36px] flex items-center justify-center"
+                        className="p-2 rounded-lg border border-border bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors min-w-[36px] min-h-[36px] flex items-center justify-center text-gray-700 dark:text-gray-200"
                         title="Next page"
                     >
                         <span className="material-symbols-outlined text-[18px]">chevron_right</span>
                     </button>
-        
+
                     {/* Last Page */}
                     <button
                         onClick={() => setCurrentPage(totalPages)}
                         disabled={currentPage === totalPages || totalPages === 0}
-                        className="p-2 rounded-lg border border-border bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors min-w-[36px] min-h-[36px] flex items-center justify-center"
+                        className="p-2 rounded-lg border border-border bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors min-w-[36px] min-h-[36px] flex items-center justify-center text-gray-700 dark:text-gray-200"
                         title="Last page"
                     >
                         <span className="material-symbols-outlined text-[18px]">last_page</span>
@@ -327,7 +327,7 @@ export function ProjectTable({ projects, onEdit, onDelete, onBulkDelete }: Proje
                                             {/* HIGH CONTRAST EDIT BUTTON - CYAN */}
                                             <button
                                                 onClick={() => onEdit?.(project)}
-                                                className="p-2 bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-300 hover:bg-cyan-200 dark:hover:bg-cyan-800/50 rounded-lg transition-colors shadow-sm"
+                                                className="p-2 bg-cyan-100 dark:bg-cyan-900/40 text-cyan-700 dark:text-cyan-400 hover:bg-cyan-200 dark:hover:bg-cyan-800/60 rounded-lg transition-colors shadow-sm"
                                                 title="Edit"
                                             >
                                                 <span className="material-symbols-outlined text-[20px]">edit</span>
@@ -335,7 +335,7 @@ export function ProjectTable({ projects, onEdit, onDelete, onBulkDelete }: Proje
                                             {/* HIGH CONTRAST DELETE BUTTON - RED */}
                                             <button
                                                 onClick={() => handleSingleDelete(project.id, project.title)}
-                                                className="p-2 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-800/50 rounded-lg transition-colors shadow-sm"
+                                                className="p-2 bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-800/60 rounded-lg transition-colors shadow-sm"
                                                 title="Delete"
                                             >
                                                 <span className="material-symbols-outlined text-[20px]">delete</span>
@@ -371,7 +371,7 @@ export function ProjectTable({ projects, onEdit, onDelete, onBulkDelete }: Proje
                             <button
                                 onClick={() => handlePageChange(currentPage - 1)}
                                 disabled={currentPage === 1}
-                                className="px-3 py-1.5 rounded-lg border border-border bg-background hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                className="px-3 py-1.5 rounded-lg border border-border bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-gray-700 dark:text-gray-200"
                             >
                                 <span className="material-symbols-outlined text-[18px]">chevron_left</span>
                             </button>
@@ -384,7 +384,7 @@ export function ProjectTable({ projects, onEdit, onDelete, onBulkDelete }: Proje
                                         "px-3 py-1.5 rounded-lg border transition-colors font-medium text-sm",
                                         currentPage === page
                                             ? "bg-primary text-white border-primary"
-                                            : "border-border bg-background hover:bg-gray-100 dark:hover:bg-gray-800 text-foreground"
+                                            : "border-border bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200"
                                     )}
                                 >
                                     {page}
@@ -394,7 +394,7 @@ export function ProjectTable({ projects, onEdit, onDelete, onBulkDelete }: Proje
                             <button
                                 onClick={() => handlePageChange(currentPage + 1)}
                                 disabled={currentPage === totalPages}
-                                className="px-3 py-1.5 rounded-lg border border-border bg-background hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                className="px-3 py-1.5 rounded-lg border border-border bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-gray-700 dark:text-gray-200"
                             >
                                 <span className="material-symbols-outlined text-[18px]">chevron_right</span>
                             </button>
