@@ -94,13 +94,13 @@ export default function AdminPage() {
                                     </p>
                                 </div>
 
-                                {/* Action Buttons - Below Title on Mobile, Auto on Desktop */}
+                                {/* Action Buttons - Compact & User-Friendly */}
                                 <div className="flex flex-col xs:flex-row items-stretch xs:items-center gap-2 sm:gap-3">
                                     <button
                                         onClick={handleAddNew}
-                                        className="flex items-center justify-center gap-2 px-4 py-2.5 bg-primary hover:bg-cyan-600 text-white font-medium rounded-lg transition-colors shadow-lg shadow-primary/25 text-sm min-h-[44px]"
+                                        className="flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 bg-primary hover:bg-cyan-600 dark:bg-cyan-600 dark:hover:bg-cyan-700 text-white font-semibold rounded-lg transition-all shadow-lg shadow-primary/25 hover:shadow-primary/40 text-sm sm:text-base min-h-[44px] w-full xs:w-auto xs:min-w-[140px] sm:min-w-[160px]"
                                     >
-                                        <span className="material-symbols-outlined text-[18px]">add</span>
+                                        <span className="material-symbols-outlined text-[18px] sm:text-[20px]">add</span>
                                         <span>Add Item</span>
                                     </button>
                                     <CSVImport onComplete={() => window.location.reload()} />

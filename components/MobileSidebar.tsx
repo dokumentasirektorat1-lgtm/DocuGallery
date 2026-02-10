@@ -84,7 +84,7 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
                     "fixed inset-0 w-screen h-screen bg-white dark:bg-gray-900 z-[9999] lg:hidden",
                     "flex flex-col",
                     "overflow-y-auto overscroll-contain",
-                    "transition-transform duration-300 ease-in-out",
+                    "transform transition-transform duration-300 ease-out",
                     isOpen ? "translate-x-0" : "-translate-x-full"
                 )}
             >
