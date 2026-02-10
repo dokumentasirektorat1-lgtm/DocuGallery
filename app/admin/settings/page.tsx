@@ -192,30 +192,29 @@ export default function SettingsPage() {
                             <hr className="border-border my-6" />
 
                             <div className="space-y-4">
-                                <div className="space-y-4">
-                                    <h3 className="font-medium text-foreground">API Configuration</h3>
-                                    <div className="space-y-1.5">
-                                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Google Drive API Key</label>
-                                        <input
-                                            type="password"
-                                            value={apiKeyInput}
-                                            onChange={(e) => setApiKeyInput(e.target.value)}
-                                            placeholder="AIza..."
-                                            className="w-full px-4 py-2 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all font-sans"
-                                        />
-                                        <p className="text-xs text-gray-400">Required for Auto-Thumbnail feature. Restrict this key to your domain in Google Cloud Console.</p>
-                                    </div>
+                                <h3 className="font-medium text-foreground">API Configuration</h3>
+                                <div className="space-y-1.5">
+                                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Google Drive API Key</label>
+                                    <input
+                                        type="password"
+                                        value={apiKeyInput}
+                                        onChange={(e) => setApiKeyInput(e.target.value)}
+                                        placeholder="AIza..."
+                                        className="w-full px-4 py-2 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all font-sans"
+                                    />
+                                    <p className="text-xs text-gray-400">Required for Auto-Thumbnail feature. Restrict this key to your domain in Google Cloud Console.</p>
                                 </div>
                             </div>
+                        </div>
 
-                            <div className="flex justify-end">
-                                <button onClick={handleSaveGlobalRender} className="px-6 py-2 bg-primary hover:bg-cyan-600 text-white font-bold rounded-xl transition-colors shadow-lg shadow-cyan-500/25">
-                                    Save Changes
-                                </button>
-                            </div>
+                        <div className="flex justify-end">
+                            <button onClick={handleSaveGlobalRender} className="px-6 py-2 bg-primary hover:bg-cyan-600 text-white font-bold rounded-xl transition-colors shadow-lg shadow-cyan-500/25">
+                                Save Changes
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
-            )
+        </div>
+    )
 }
