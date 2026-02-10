@@ -332,21 +332,21 @@ export function ProjectTable({ projects, onEdit, onDelete, onBulkDelete }: Proje
                                     </td>
                                     <td className="px-6 py-4 text-right">
                                         <div className="flex items-center justify-end gap-2">
-                                            {/* HIGH CONTRAST EDIT BUTTON - CYAN */}
+                                            {/* EDIT BUTTON - Centered Icon */}
                                             <button
                                                 onClick={() => onEdit?.(project)}
-                                                className="p-2 bg-cyan-100 dark:bg-cyan-900/40 text-cyan-700 dark:text-cyan-400 hover:bg-cyan-200 dark:hover:bg-cyan-800/60 rounded-lg transition-colors shadow-sm"
+                                                className="p-2 bg-cyan-100 dark:bg-cyan-900/40 text-cyan-700 dark:text-cyan-400 hover:bg-cyan-200 dark:hover:bg-cyan-800/60 rounded-lg transition-all shadow-sm hover:shadow-md flex items-center justify-center min-w-[36px] min-h-[36px]"
                                                 title="Edit"
                                             >
-                                                <span className="material-symbols-outlined text-[20px]">edit</span>
+                                                <span className="material-symbols-outlined text-[20px] leading-none">edit</span>
                                             </button>
-                                            {/* HIGH CONTRAST DELETE BUTTON - RED */}
+                                            {/* DELETE BUTTON - Centered Icon */}
                                             <button
                                                 onClick={() => handleSingleDelete(project.id, project.title)}
-                                                className="p-2 bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-800/60 rounded-lg transition-colors shadow-sm"
+                                                className="p-2 bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-800/60 rounded-lg transition-all shadow-sm hover:shadow-md flex items-center justify-center min-w-[36px] min-h-[36px]"
                                                 title="Delete"
                                             >
-                                                <span className="material-symbols-outlined text-[20px]">delete</span>
+                                                <span className="material-symbols-outlined text-[20px] leading-none">delete</span>
                                             </button>
                                         </div>
                                     </td>
@@ -355,8 +355,8 @@ export function ProjectTable({ projects, onEdit, onDelete, onBulkDelete }: Proje
                         </tbody>
                     </table>
 
-                    {/* PAGINATION CONTROLS */}
-                    <div className="flex items-center justify-between px-6 py-4 border-t border-border bg-gray-50 dark:bg-gray-800/30">
+                    {/* PAGINATION CONTROLS - Responsive */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-4 sm:px-6 py-3 sm:py-4 border-t border-border bg-gray-50 dark:bg-gray-800/30">
                         <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                             <span>Show</span>
                             <select
@@ -375,13 +375,13 @@ export function ProjectTable({ projects, onEdit, onDelete, onBulkDelete }: Proje
                             </span>
                         </div>
 
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-1 flex-wrap">
                             <button
                                 onClick={() => handlePageChange(currentPage - 1)}
                                 disabled={currentPage === 1}
-                                className="px-3 py-1.5 rounded-lg border border-border bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-gray-700 dark:text-gray-200"
+                                className="px-3 py-1.5 rounded-lg border border-border bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-gray-700 dark:text-gray-200 flex items-center justify-center min-h-[36px]"
                             >
-                                <span className="material-symbols-outlined text-[18px]">chevron_left</span>
+                                <span className="material-symbols-outlined text-[18px] leading-none">chevron_left</span>
                             </button>
 
                             {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
@@ -402,9 +402,9 @@ export function ProjectTable({ projects, onEdit, onDelete, onBulkDelete }: Proje
                             <button
                                 onClick={() => handlePageChange(currentPage + 1)}
                                 disabled={currentPage === totalPages}
-                                className="px-3 py-1.5 rounded-lg border border-border bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-gray-700 dark:text-gray-200"
+                                className="px-3 py-1.5 rounded-lg border border-border bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-gray-700 dark:text-gray-200 flex items-center justify-center min-h-[36px]"
                             >
-                                <span className="material-symbols-outlined text-[18px]">chevron_right</span>
+                                <span className="material-symbols-outlined text-[18px] leading-none">chevron_right</span>
                             </button>
                         </div>
                     </div>
