@@ -101,88 +101,52 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
                     </button>
                 </div>
 
-                {/* Navigation - Centered in available space */}
-                <nav className="flex-1 flex flex-col justify-center px-6 py-4 space-y-2 bg-white dark:bg-gray-900">
-                    <Link
-                        href="/admin"
-                        onClick={onClose}
-                        className={cn(
-                            "flex items-center gap-3 px-4 py-3 rounded-xl transition-all group min-h-[48px]",
-                            pathname === "/admin"
-                                ? "bg-primary text-white shadow-lg shadow-primary/25"
-                                : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
-                        )}
-                    >
-                        <span className={cn(
-                            "material-symbols-outlined text-[22px] transition-transform group-hover:scale-110",
-                            pathname === "/admin" ? "text-white" : "text-primary"
-                        )}>
-                            folder_managed
-                        </span>
-                        <span className="font-medium">Project Manager</span>
-                    </Link>
-
-                    <Link
-                        href="/admin/requests"
-                        onClick={onClose}
-                        className={cn(
-                            "flex items-center gap-3 px-4 py-3 rounded-xl transition-all group min-h-[48px]",
-                            pathname === "/admin/requests"
-                                ? "bg-primary text-white shadow-lg shadow-primary/25"
-                                : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
-                        )}
-                    >
-                        <span className={cn(
-                            "material-symbols-outlined text-[22px] transition-transform group-hover:scale-110",
-                            pathname === "/admin/requests" ? "text-white" : "text-primary"
-                        )}>
-                            how_to_reg
-                        </span>
-                        <span className="font-medium">Access Requests</span>
-                    </Link>
-
-                    <Link
-                        href="/admin/settings"
-                        onClick={onClose}
-                        className={cn(
-                            "flex items-center gap-3 px-4 py-3 rounded-xl transition-all group min-h-[48px]",
-                            pathname === "/admin/settings"
-                                ? "bg-primary text-white shadow-lg shadow-primary/25"
-                                : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
-                        )}
-                    >
-                        <span className={cn(
-                            "material-symbols-outlined text-[22px] transition-transform group-hover:scale-110",
-                            pathname === "/admin/settings" ? "text-white" : "text-primary"
-                        )}>
-                            settings
-                        </span>
-                        <span className="font-medium">Settings</span>
-                    </Link>
+                {/* Navigation - Top Aligned */}
+                <nav className="flex-none px-6 py-6 space-y-2">
+                    {links.map((link) => (
+                        <Link
+                            key={link.href}
+                            href={link.href}
+                            onClick={onClose}
+                            className={cn(
+                                "flex items-center gap-3 px-4 py-3 rounded-xl transition-all group min-h-[48px]",
+                                pathname === link.href
+                                    ? "bg-primary text-white shadow-lg shadow-primary/25"
+                                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
+                            )}
+                        >
+                            <span className={cn(
+                                "material-symbols-outlined text-[22px] transition-transform group-hover:scale-110",
+                                pathname === link.href ? "text-white" : "text-primary"
+                            )}>
+                                {link.icon}
+                            </span>
+                            <span className="font-medium">{link.name}</span>
+                        </Link>
+                    ))}
                 </nav>
 
-                {/* User Info & Logout - Pinned to Bottom with Safe Area */}
-                <div className="flex-shrink-0 p-4 pb-safe border-t border-gray-200 dark:border-gray-800 space-y-3 bg-gray-50 dark:bg-gray-800">
-                    {/* User Card - Compact */}
-                    <div className="flex items-center gap-3 p-2.5 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
-                        <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-white font-bold text-sm shadow-md flex-shrink-0">
+                {/* Spacer to push user info down */}
+                <div className="flex-1"></div>
+
+                {/* User Info & Logout - Desktop Style, Pinned Lower */}
+                <div className="flex-shrink-0 p-6 pb-[15vh]">
+                    <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+                        <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm flex-shrink-0">
                             {initials}
                         </div>
                         <div className="flex-1 min-w-0">
-                            <p className="text-xs font-semibold text-gray-900 dark:text-white truncate">{displayName}</p>
-                            <p className="text-[10px] text-gray-600 dark:text-gray-400 truncate">{user?.email}</p>
+                            <p className="text-sm font-bold text-gray-900 dark:text-white truncate">{displayName}</p>
+                            <p className="text-[10px] text-gray-500 dark:text-gray-400 truncate">{userData?.role || 'Admin'}</p>
                         </div>
+                        <button
+                            onClick={handleLogout}
+                            className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors text-gray-400 hover:text-red-600 dark:hover:text-red-500"
+                            title="Logout"
+                        >
+                            <span className="material-symbols-outlined text-[20px]">logout</span>
+                        </button>
                     </div>
-
-                    {/* Logout Button - Prominent */}
-                    <button
-                        onClick={handleLogout}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-white dark:bg-gray-900 hover:bg-red-50 dark:hover:bg-red-900/20 border-2 border-gray-200 dark:border-gray-700 hover:border-red-300 dark:hover:border-red-700 rounded-xl transition-all text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-500 font-semibold group min-h-[44px] shadow-sm hover:shadow-md"
-                        aria-label="Logout"
-                    >
-                        <span className="material-symbols-outlined text-[18px] group-hover:text-red-600 dark:group-hover:text-red-500">logout</span>
-                        <span className="text-sm">Logout</span>
-                    </button>
                 </div>
             </aside>
         </>
