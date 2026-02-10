@@ -202,17 +202,17 @@ export function ProjectTable({ projects, onEdit, onDelete, onBulkDelete }: Proje
 
 
 
-            {/* Table Container - Mobile Scroll Visible */}
+            {/* Table Container - MOBILE SCROLL FIXED */}
             <div
-                className="overflow-x-auto overflow-y-visible pb-3 -mx-4 px-4 sm:mx-0 sm:px-0"
+                className="overflow-x-auto pb-3"
                 style={{
                     WebkitOverflowScrolling: 'touch',
                     scrollbarWidth: 'auto',
                     scrollbarColor: 'rgb(6 182 212) rgb(229 231 235)'
                 }}
             >
-                <div className="overflow-hidden rounded-xl border border-border bg-surface shadow-sm">
-                    <table className="w-full text-left text-sm min-w-[900px]">
+                <div className="rounded-xl border border-border bg-surface shadow-sm min-w-[900px]">
+                    <table className="w-full text-left text-sm">
                         <thead className="bg-gray-50 dark:bg-gray-800/50 text-gray-500 font-medium">
                             <tr>
                                 <th className="px-6 py-4 w-12">
