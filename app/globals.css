@@ -3,11 +3,32 @@
 @custom-variant dark (&.dark);
 
 :root {
-  --background: #f6f8f8;
-  --foreground: #101f22;
-  --primary: #2bcdee;
+  /* Light Mode Colors */
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --primary: #06b6d4;
+  /* Cyan 500 */
   --surface: #ffffff;
-  --border: #e5e7eb;
+  --border: #e2e8f0;
+  --muted: #64748b;
+  --input: #f1f5f9;
+}
+
+.dark {
+  /* Dark Mode Colors - High Contrast */
+  --background: #020617;
+  /* Slate 950 - Very dark for good contrast */
+  --foreground: #f8fafc;
+  /* Slate 50 */
+  --primary: #22d3ee;
+  /* Cyan 400 - Brighter for dark mode */
+  --surface: #0f172a;
+  /* Slate 900 */
+  --border: #1e293b;
+  /* Slate 800 */
+  --muted: #94a3b8;
+  /* Slate 400 */
+  --input: #1e293b;
 }
 
 @theme inline {
@@ -16,15 +37,9 @@
   --color-primary: var(--primary);
   --color-surface: var(--surface);
   --color-border: var(--border);
+  --color-muted: var(--muted);
+  --color-input: var(--input);
   --font-sans: var(--font-inter);
-}
-
-.dark {
-  --background: #0d1517;
-  --foreground: #ffffff;
-  --surface: #1a2c30;
-  --border: #283639;
-  --text-secondary: #9db4b9;
 }
 
 body {

@@ -7,6 +7,7 @@ import { isFacebookLink, generateDriveThumbnail, extractDriveFolderId } from "@/
 import { uploadThumbnail, validateImageFile } from "@/lib/firebaseStorage"
 import { FolderImageSelector } from "./FolderImageSelector"
 import { showSuccessToast, showErrorToast } from "@/lib/toast"
+import { useSettings } from "@/context/SettingsContext"
 
 interface AdminFormProps {
     initialData?: MediaFolder
@@ -16,6 +17,8 @@ interface AdminFormProps {
 }
 
 export function AdminForm({ initialData, onSubmit, onCancel, isEditing = false }: AdminFormProps) {
+    const { googleDriveApiKey } = useSettings()
+
     const [title, setTitle] = useState("")
     const [date, setDate] = useState("")
     const [location, setLocation] = useState("")
@@ -98,7 +101,7 @@ export function AdminForm({ initialData, onSubmit, onCancel, isEditing = false }
             try {
                 const { getAutoThumbnail } = await import("@/lib/autoThumbnail")
                 console.log('🔄 Fetching auto-thumbnail via Drive API...')
-                finalThumbnail = await getAutoThumbnail(folderId)
+                finalThumbnail = await getAutoThumbnail(folderId, googleDriveApiKey)
             } catch (error) {
                 console.error('Failed to fetch auto-thumbnail, using fallback:', error)
                 finalThumbnail = generateDriveThumbnail(driveLink)

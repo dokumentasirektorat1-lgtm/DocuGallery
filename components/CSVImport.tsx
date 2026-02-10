@@ -5,12 +5,16 @@ import { db } from "@/lib/firebase"
 import { collection, addDoc } from "firebase/firestore"
 import { extractDriveFolderId, generateDriveThumbnail, isFacebookLink } from "@/lib/helpers"
 import { showSuccess, showError, showLoading, closeSwal } from "@/lib/sweetalert"
+import { useSettings } from "@/context/SettingsContext"
+import { getAutoThumbnail } from "@/lib/autoThumbnail"
 
 interface CSVImportProps {
     onComplete: () => void
 }
 
 export function CSVImport({ onComplete }: CSVImportProps) {
+    const { googleDriveApiKey } = useSettings()
+
     const [isOpen, setIsOpen] = useState(false)
     const [isProcessing, setIsProcessing] = useState(false)
     const [progress, setProgress] = useState("")
@@ -57,7 +61,7 @@ export function CSVImport({ onComplete }: CSVImportProps) {
             let successCount = 0
 
             // Import getAutoThumbnail
-            const { getAutoThumbnail } = await import("@/lib/autoThumbnail")
+            // const { getAutoThumbnail } = await import("@/lib/autoThumbnail")
 
             for (const [index, row] of rows.entries()) {
                 setProgress(`Processing ${index + 1}/${rows.length}...`)
@@ -80,7 +84,7 @@ export function CSVImport({ onComplete }: CSVImportProps) {
                 if (!thumbnailUrl && driveFolderId && contentType === "drive") {
                     console.log(`🔄 [CSV Row ${index + 1}] Fetching auto-thumbnail for: ${driveFolderId}`)
                     try {
-                        thumbnailUrl = await getAutoThumbnail(driveFolderId)
+                        thumbnailUrl = await getAutoThumbnail(driveFolderId, googleDriveApiKey)
                         console.log(`✅ [CSV Row ${index + 1}] Got thumbnail: ${thumbnailUrl}`)
                     } catch (error) {
                         console.error(`❌ [CSV Row ${index + 1}] Failed to fetch auto-thumbnail:`, error)
