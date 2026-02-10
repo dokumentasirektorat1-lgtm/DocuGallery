@@ -25,14 +25,20 @@ interface DriveImageFile {
  * @param folderId - Google Drive folder ID
  * @returns Promise<string> - Thumbnail URL or empty string
  */
-export async function getAutoThumbnail(folderId: string): Promise<string> {
+export async function getAutoThumbnail(folderId: string, apiKey?: string): Promise<string> {
     if (!folderId) return ""
+
+    const driveKey = apiKey || GOOGLE_DRIVE_API_KEY;
+
+    if (!driveKey) {
+        console.warn("⚠️ Google Drive API Key is missing. Auto-thumbnail may fail.");
+    }
 
     try {
         // Build API URL to search for ALL images in the folder with metadata
         const query = `'${folderId}' in parents and mimeType contains 'image/'`
         const fields = "files(id,name,thumbnailLink,webContentLink,imageMediaMetadata,size)"
-        const apiUrl = `${DRIVE_API_BASE}/files?q=${encodeURIComponent(query)}&fields=${fields}&key=${GOOGLE_DRIVE_API_KEY}&pageSize=50&orderBy=createdTime desc`
+        const apiUrl = `${DRIVE_API_BASE}/files?q=${encodeURIComponent(query)}&fields=${fields}&key=${driveKey}&pageSize=50&orderBy=createdTime desc`
 
         console.log('🔍 Fetching images from Drive API for best visual picker:', folderId)
 

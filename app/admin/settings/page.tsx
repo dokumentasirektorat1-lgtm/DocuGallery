@@ -1,11 +1,11 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { showSuccess, showError } from "@/lib/sweetalert"
 import { AdminSidebar } from "@/components/AdminSidebar"
 import { useSettings } from "@/context/SettingsContext"
 
 export default function SettingsPage() {
-    const { appName, appLogo, heroHeadline, heroSubline, faviconUrl, browserTitle, footerText, updateSettings } = useSettings();
+    const { appName, appLogo, heroHeadline, heroSubline, faviconUrl, browserTitle, footerText, googleDriveApiKey, updateSettings } = useSettings();
 
     // Local state for inputs
     const [nameInput, setNameInput] = useState(appName);
@@ -20,7 +20,7 @@ export default function SettingsPage() {
     const [profileName, setProfileName] = useState("Admin User");
     const [profileImage, setProfileImage] = useState("");
     const [publicRegistration, setPublicRegistration] = useState(false);
-    const [apiKey, setApiKey] = useState("");
+    const [apiKeyInput, setApiKeyInput] = useState(googleDriveApiKey || "");
 
     // Sync local state when context changes
     useEffect(() => {
@@ -31,11 +31,16 @@ export default function SettingsPage() {
         setFaviconInput(faviconUrl);
         setBrowserTitleInput(browserTitle);
         setFooterTextInput(footerText);
-    }, [appName, appLogo, heroHeadline, heroSubline, faviconUrl, browserTitle, footerText]);
+        setApiKeyInput(googleDriveApiKey || "");
+    }, [appName, appLogo, heroHeadline, heroSubline, faviconUrl, browserTitle, footerText, googleDriveApiKey]);
 
-    const handleSaveGlobalRender = () => {
-        updateSettings(nameInput, logoInput, heroHeadlineInput, heroSublineInput, faviconInput, browserTitleInput, footerTextInput);
-        alert("Settings updated!");
+    const handleSaveGlobalRender = async () => {
+        try {
+            await updateSettings(nameInput, logoInput, heroHeadlineInput, heroSublineInput, faviconInput, browserTitleInput, footerTextInput, apiKeyInput);
+            await showSuccess('Your changes have been successfully updated.', 'Settings Saved');
+        } catch (error) {
+            await showError('Failed to save settings.');
+        }
     };
 
     return (
@@ -187,29 +192,30 @@ export default function SettingsPage() {
                             <hr className="border-border my-6" />
 
                             <div className="space-y-4">
-                                <h3 className="font-medium text-foreground">Cloud Config (Placeholder)</h3>
-                                <div className="space-y-1.5">
-                                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Firebase API Key Override</label>
-                                    <input
-                                        type="password"
-                                        value={apiKey}
-                                        onChange={(e) => setApiKey(e.target.value)}
-                                        placeholder="****************"
-                                        className="w-full px-4 py-2 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all font-sans"
-                                    />
-                                    <p className="text-xs text-gray-400">This does not change the env file, for demonstration only.</p>
+                                <div className="space-y-4">
+                                    <h3 className="font-medium text-foreground">API Configuration</h3>
+                                    <div className="space-y-1.5">
+                                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Google Drive API Key</label>
+                                        <input
+                                            type="password"
+                                            value={apiKeyInput}
+                                            onChange={(e) => setApiKeyInput(e.target.value)}
+                                            placeholder="AIza..."
+                                            className="w-full px-4 py-2 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all font-sans"
+                                        />
+                                        <p className="text-xs text-gray-400">Required for Auto-Thumbnail feature. Restrict this key to your domain in Google Cloud Console.</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div className="flex justify-end">
-                            <button className="px-6 py-2 bg-primary hover:bg-cyan-600 text-white font-bold rounded-xl transition-colors shadow-lg shadow-cyan-500/25">
-                                Save Changes
-                            </button>
+                            <div className="flex justify-end">
+                                <button onClick={handleSaveGlobalRender} className="px-6 py-2 bg-primary hover:bg-cyan-600 text-white font-bold rounded-xl transition-colors shadow-lg shadow-cyan-500/25">
+                                    Save Changes
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    )
+            )
 }

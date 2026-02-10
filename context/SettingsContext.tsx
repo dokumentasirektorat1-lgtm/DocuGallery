@@ -13,7 +13,8 @@ interface SettingsContextType {
     faviconUrl: string;
     browserTitle: string;
     footerText: string;
-    updateSettings: (name: string, logo: string, headline?: string, subline?: string, favicon?: string, title?: string, footer?: string) => void;
+    googleDriveApiKey?: string;
+    updateSettings: (name: string, logo: string, headline?: string, subline?: string, favicon?: string, title?: string, footer?: string, driveKey?: string) => void;
 }
 
 const SettingsContext = createContext<SettingsContextType>({
@@ -24,6 +25,7 @@ const SettingsContext = createContext<SettingsContextType>({
     faviconUrl: "",
     browserTitle: "DocuGallery Hub",
     footerText: "",
+    googleDriveApiKey: "",
     updateSettings: () => { },
 });
 
@@ -37,6 +39,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     const [faviconUrl, setFaviconUrl] = useState("");
     const [browserTitle, setBrowserTitle] = useState("DocuGallery Hub");
     const [footerText, setFooterText] = useState("");
+    const [googleDriveApiKey, setGoogleDriveApiKey] = useState("");
     const [isInitialized, setIsInitialized] = useState(false);
 
     // Load from Firestore (Real-time)
@@ -52,6 +55,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
                 if (data.faviconUrl) setFaviconUrl(data.faviconUrl);
                 if (data.browserTitle) setBrowserTitle(data.browserTitle);
                 if (data.footerText !== undefined) setFooterText(data.footerText);
+                if (data.googleDriveApiKey) setGoogleDriveApiKey(data.googleDriveApiKey);
             }
             setIsInitialized(true);
         });
@@ -59,7 +63,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
         return () => unsubscribe();
     }, []);
 
-    const updateSettings = async (name: string, logo: string, headline?: string, subline?: string, favicon?: string, title?: string, footer?: string) => {
+    const updateSettings = async (name: string, logo: string, headline?: string, subline?: string, favicon?: string, title?: string, footer?: string, driveKey?: string) => {
         // Optimistic update
         setAppName(name);
         setAppLogo(logo);
@@ -68,6 +72,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
         if (favicon !== undefined) setFaviconUrl(favicon);
         if (title !== undefined) setBrowserTitle(title);
         if (footer !== undefined) setFooterText(footer);
+        if (driveKey !== undefined) setGoogleDriveApiKey(driveKey);
 
         // Firestore update
         const docRef = doc(db, "settings", "siteConfig");
@@ -78,12 +83,13 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
             heroSubline: subline || heroSubline,
             faviconUrl: favicon !== undefined ? favicon : faviconUrl,
             browserTitle: title !== undefined ? title : browserTitle,
-            footerText: footer !== undefined ? footer : footerText
+            footerText: footer !== undefined ? footer : footerText,
+            googleDriveApiKey: driveKey !== undefined ? driveKey : googleDriveApiKey
         }, { merge: true });
     };
 
     return (
-        <SettingsContext.Provider value={{ appName, appLogo, heroHeadline, heroSubline, faviconUrl, browserTitle, footerText, updateSettings }}>
+        <SettingsContext.Provider value={{ appName, appLogo, heroHeadline, heroSubline, faviconUrl, browserTitle, footerText, googleDriveApiKey, updateSettings }}>
             {children}
         </SettingsContext.Provider>
     );

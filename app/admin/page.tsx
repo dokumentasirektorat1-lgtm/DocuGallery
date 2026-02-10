@@ -15,7 +15,7 @@ export default function AdminPage() {
     const { projects, addProject, updateProject, deleteProject } = useProjects()
     const [editingProject, setEditingProject] = useState<MediaFolder | undefined>(undefined)
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [searchQuery, setSearchQuery] = useState("")
+    const [searchQuery, setSearchQuery] = useState<string>("")
 
     // Filter projects based on search query
     const filteredProjects = projects.filter(project => {
