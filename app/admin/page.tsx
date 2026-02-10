@@ -15,6 +15,21 @@ export default function AdminPage() {
     const { projects, addProject, updateProject, deleteProject } = useProjects()
     const [editingProject, setEditingProject] = useState<MediaFolder | undefined>(undefined)
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [searchQuery, setSearchQuery] = useState("")
+
+    // Filter projects based on search query
+    const filteredProjects = projects.filter(project => {
+        if (!searchQuery.trim()) return true
+
+        const query = searchQuery.toLowerCase()
+        return (
+            project.title.toLowerCase().includes(query) ||
+            project.date.toLowerCase().includes(query) ||
+            project.location.toLowerCase().includes(query) ||
+            project.category.toLowerCase().includes(query) ||
+            (project.status?.toLowerCase().includes(query))
+        )
+    })
 
     const handleEdit = (project: MediaFolder) => {
         setEditingProject(project)
@@ -99,6 +114,8 @@ export default function AdminPage() {
                                 <input
                                     type="text"
                                     placeholder="Search media or documents..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
                                     className="block w-full pl-10 pr-3 py-2.5 border-none bg-white dark:bg-gray-800 rounded-lg shadow-sm focus:ring-2 focus:ring-primary text-sm placeholder-gray-400 dark:text-white"
                                 />
                             </div>
@@ -119,7 +136,7 @@ export default function AdminPage() {
                         {/* Main Table */}
                         <div className="mb-12">
                             <ProjectTable
-                                projects={projects}
+                                projects={filteredProjects}
                                 onEdit={handleEdit}
                                 onDelete={deleteProject}
                                 onBulkDelete={async (ids) => {
@@ -132,9 +149,9 @@ export default function AdminPage() {
 
                         {/* Dashboard Stats Grid */}
                         <DashboardStats
-                            totalItems={projects.length}
-                            completedProjects={projects.filter(p => p.status === 'Synced').length}
-                            inReview={projects.filter(p => p.status === 'Indexing').length}
+                            totalItems={filteredProjects.length}
+                            completedProjects={filteredProjects.filter(p => p.status === 'Synced').length}
+                            inReview={filteredProjects.filter(p => p.status === 'Indexing').length}
                         />
                     </div>
                 </div>
