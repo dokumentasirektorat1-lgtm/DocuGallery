@@ -53,7 +53,7 @@ export function AdminSidebar() {
                                 "flex items-center gap-3 px-4 py-3 text-sm md:text-base font-medium rounded-xl transition-colors min-h-[44px]",
                                 isActive
                                     ? "bg-primary/10 text-primary"
-                                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-primary/5"
                             )}
                         >
                             <span className={cn(

@@ -8,8 +8,9 @@ import { DashboardStats } from "@/components/DashboardStats"
 import { useProjects } from "@/lib/useProjects"
 import { MediaFolder } from "@/lib/data"
 import { CSVImport } from "@/components/CSVImport"
+import { ExportButton } from "@/components/ExportButton"
 import { ProtectedRoute } from "@/components/ProtectedRoute"
-import Swal from "sweetalert2"
+import { showSuccess, showError, showConfirm } from "@/lib/sweetalert"
 
 export default function AdminPage() {
     const { projects, addProject, updateProject, deleteProject } = useProjects()
@@ -50,46 +51,59 @@ export default function AdminPage() {
         try {
             if (editingProject) {
                 await updateProject(editingProject.id, data)
-                await Swal.fire({
-                    icon: "success",
-                    title: "Update Berhasil!",
-                    text: "Data proyek berhasil diperbarui",
-                    timer: 2000,
-                    showConfirmButton: false
-                })
+                await showSuccess("Data proyek berhasil diperbarui", "Update Berhasil!")
             } else {
                 await addProject(data)
-                await Swal.fire({
-                    icon: "success",
-                    title: "Berhasil Menambahkan Data!",
-                    text: "Proyek baru berhasil ditambahkan",
-                    timer: 2000,
-                    showConfirmButton: false
-                })
+                await showSuccess("Proyek baru berhasil ditambahkan", "Berhasil Menambahkan Data!")
             }
             handleCloseModal()
         } catch (error: any) {
-            await Swal.fire({
-                icon: "error",
-                title: "Gagal",
-                text: error?.message || "Terjadi kesalahan saat menyimpan data",
-            })
+            await showError(error?.message || "Terjadi kesalahan saat menyimpan data", "Gagal")
         }
     }
 
     const handleDelete = async (id: string) => {
-        await deleteProject(id)
+        const confirmed = await showConfirm(
+            "Hapus Proyek?",
+            "Data yang dihapus tidak dapat dikembalikan",
+            "Ya, Hapus",
+            "Batal"
+        );
+
+        if (confirmed) {
+            try {
+                await deleteProject(id);
+                await showSuccess("Proyek berhasil dihapus");
+            } catch (error) {
+                await showError("Gagal menghapus proyek");
+            }
+        }
     }
 
     const handleBulkDelete = async (ids: string[]) => {
-        for (const id of ids) {
-            await deleteProject(id)
+        const confirmed = await showConfirm(
+            `Hapus ${ids.length} Proyek?`,
+            "Tindakan ini tidak dapat dibatalkan",
+            "Ya, Hapus Semua",
+            "Batal"
+        );
+
+        if (confirmed) {
+            try {
+                // Delete one by one to ensure Firestore triggers
+                const deletePromises = ids.map(id => deleteProject(id));
+                await Promise.all(deletePromises);
+
+                await showSuccess(`${ids.length} proyek berhasil dihapus`);
+            } catch (error) {
+                await showError("Gagal menghapus beberapa proyek");
+            }
         }
     }
 
     return (
         <ProtectedRoute>
-            <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+            <div className="min-h-screen bg-background">
                 <AdminSidebar />
 
                 <div className="lg:pl-64 transition-all duration-300">
@@ -116,13 +130,14 @@ export default function AdminPage() {
                                     placeholder="Search media or documents..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="block w-full pl-10 pr-3 py-2.5 border-none bg-white dark:bg-gray-800 rounded-lg shadow-sm focus:ring-2 focus:ring-primary text-sm placeholder-gray-400 dark:text-white"
+                                    className="block w-full pl-10 pr-3 py-2.5 border-none bg-white dark:bg-surface rounded-lg shadow-sm focus:ring-2 focus:ring-primary text-sm placeholder-gray-400 dark:text-gray-300"
                                 />
                             </div>
 
                             {/* Action Buttons */}
                             <div className="flex items-center gap-3">
                                 <CSVImport onComplete={() => window.location.reload()} />
+                                <ExportButton projects={projects} />
                                 <button
                                     onClick={handleAddNew}
                                     className="inline-flex items-center px-4 py-2.5 bg-primary text-white text-sm font-medium rounded-lg hover:bg-cyan-600 transition-colors shadow-sm"

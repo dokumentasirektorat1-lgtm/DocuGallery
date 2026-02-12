@@ -3,8 +3,8 @@ import Swal from 'sweetalert2'
 // Custom SweetAlert2 configuration matching app theme
 const swalConfig = {
     customClass: {
-        popup: 'rounded-2xl shadow-2xl',
-        title: 'text-xl font-bold',
+        popup: 'rounded-2xl shadow-2xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100',
+        title: 'text-xl font-bold text-gray-900 dark:text-white',
         confirmButton: 'px-6 py-3 bg-primary hover:bg-cyan-600 text-white font-medium rounded-xl transition-colors',
         cancelButton: 'px-6 py-3 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-medium rounded-xl transition-colors',
         denyButton: 'px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-medium rounded-xl transition-colors',

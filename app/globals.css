@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-@custom-variant dark (&.dark);
+@custom-variant dark (&:where(.dark, .dark *));
 
 :root {
   /* Light Mode Colors */
@@ -15,20 +15,22 @@
 }
 
 .dark {
+  color-scheme: dark;
   /* Dark Mode Colors - High Contrast */
-  --background: #020617;
-  /* Slate 950 - Very dark for good contrast */
+  --background: #101922;
+  /* Requested Dark Background */
   --foreground: #f8fafc;
   /* Slate 50 */
-  --primary: #22d3ee;
-  /* Cyan 400 - Brighter for dark mode */
-  --surface: #0f172a;
-  /* Slate 900 */
-  --border: #1e293b;
-  /* Slate 800 */
+  --primary: #137fec;
+  /* Requested Primary Blue (or keep Cyan #22d3ee if preferred, but user suggested this) */
+  --surface: #1a242e;
+  /* Requested Surface/Card Color */
+  --border: rgba(255, 255, 255, 0.1);
+  /* White with 10% opacity for subtle borders */
   --muted: #94a3b8;
   /* Slate 400 */
-  --input: #1e293b;
+  --input: #1a242e;
+  /* Match surface for inputs */
 }
 
 @theme inline {
@@ -74,13 +76,46 @@ body {
 }
 
 .dark .overflow-x-auto {
-  scrollbar-color: #2bcdee #283639;
+  scrollbar-color: #2d3a49 #101922;
 }
 
 .dark .overflow-x-auto::-webkit-scrollbar-track {
-  background: #283639;
+  background: #101922;
 }
 
 .dark .overflow-x-auto::-webkit-scrollbar-thumb {
-  background: #2bcdee;
+  background: #2d3a49;
+  border-radius: 4px;
+}
+
+.dark .overflow-x-auto::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+/* SweetAlert2 Dark Mode Overrides */
+.dark .swal2-popup {
+  background-color: #1e293b !important;
+  /* Slate 800 */
+  color: #f8fafc !important;
+}
+
+.dark .swal2-title {
+  color: #f8fafc !important;
+}
+
+.dark .swal2-html-container {
+  color: #cbd5e1 !important;
+  /* Slate 300 */
+}
+
+/* Custom Checkbox Styling from Mega-Prompt */
+.dark input[type="checkbox"] {
+  border-color: rgba(255, 255, 255, 0.2);
+  background-color: transparent;
+}
+
+.dark input[type="checkbox"]:checked {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  color: white;
 }
