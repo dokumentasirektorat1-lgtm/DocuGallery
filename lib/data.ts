@@ -7,6 +7,7 @@ export interface MediaFolder {
     thumbnailUrl: string;
     driveFolderId: string;
     isPrivate: boolean;
+    accessLevel?: "public" | "private" | "admin_only";
     status?: "Synced" | "Indexing" | "Error";
     contentType?: "drive" | "facebook"; // Platform type
     postType?: "post" | "video"; // For Facebook content

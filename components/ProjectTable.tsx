@@ -293,11 +293,20 @@ export function ProjectTable({ projects, onEdit, onDelete, onBulkDelete }: Proje
                                             {project.contentType === "facebook" ? "Facebook" : "Drive"}
                                         </span>
                                     </td>
-                                    <td className="px-6 py-4 text-gray-500">
-                                        <div className="flex items-center gap-1">
-                                            {project.isPrivate && <span className="material-symbols-outlined text-[14px]">lock</span>}
-                                            <span>{project.isPrivate ? "Private" : "Public"}</span>
-                                        </div>
+                                    <td className="px-6 py-4">
+                                        <span className={cn(
+                                            "px-2.5 py-1 rounded-full text-xs font-medium flex items-center w-fit gap-1",
+                                            project.accessLevel === "admin_only"
+                                                ? "bg-rose-100 dark:bg-rose-900/20 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-500/20"
+                                                : (project.accessLevel === "private" || project.isPrivate)
+                                                    ? "bg-yellow-100 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-500/20"
+                                                    : "bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-500/20"
+                                        )}>
+                                            <span className="material-symbols-outlined text-[14px]">
+                                                {project.accessLevel === "admin_only" ? "local_police" : (project.accessLevel === "private" || project.isPrivate ? "lock" : "public")}
+                                            </span>
+                                            {project.accessLevel === "admin_only" ? "Admin Only" : (project.accessLevel === "private" || project.isPrivate ? "Private" : "Public")}
+                                        </span>
                                     </td>
                                     <td className="px-6 py-4 text-gray-500 text-xs">
                                         {(project as any).createdAt

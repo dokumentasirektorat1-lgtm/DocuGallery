@@ -23,7 +23,7 @@ export function AdminForm({ initialData, onSubmit, onCancel, isEditing = false }
     const [date, setDate] = useState("")
     const [location, setLocation] = useState("")
     const [driveLink, setDriveLink] = useState("")
-    const [isPrivate, setIsPrivate] = useState(false)
+    const [accessLevel, setAccessLevel] = useState<"public" | "private" | "admin_only">("public")
     const [thumbnailType, setThumbnailType] = useState<"auto" | "custom" | "upload" | "folder">("auto")
     const [thumbnailInput, setThumbnailInput] = useState("")
     const [postType, setPostType] = useState<"post" | "video">("post")
@@ -40,7 +40,7 @@ export function AdminForm({ initialData, onSubmit, onCancel, isEditing = false }
             setDate(initialData.date)
             setLocation(initialData.location)
             setDriveLink(initialData.driveFolderId)
-            setIsPrivate(initialData.isPrivate)
+            setAccessLevel(initialData.accessLevel || (initialData.isPrivate ? "private" : "public"))
             setThumbnailInput(initialData.thumbnailUrl || "")
             setThumbnailType(initialData.thumbnailUrl ? "custom" : "auto")
             setPostType(initialData.postType || "post")
@@ -49,7 +49,7 @@ export function AdminForm({ initialData, onSubmit, onCancel, isEditing = false }
             setDate("")
             setLocation("")
             setDriveLink("")
-            setIsPrivate(false)
+            setAccessLevel("public")
             setThumbnailInput("")
             setThumbnailType("auto")
             setPostType("post")
@@ -120,7 +120,8 @@ export function AdminForm({ initialData, onSubmit, onCancel, isEditing = false }
             date,
             location,
             driveFolderId,
-            isPrivate,
+            isPrivate: accessLevel !== "public", // Backward compatibility
+            accessLevel,
             category: "Project",
             thumbnailUrl: finalThumbnail,
             status: "Synced",
@@ -306,20 +307,50 @@ export function AdminForm({ initialData, onSubmit, onCancel, isEditing = false }
                         </div>
                     )}
 
-                    <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
-                        <div className="flex items-center gap-2">
-                            <span className="material-symbols-outlined text-[20px] text-gray-600 dark:text-gray-400">lock</span>
-                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Private Content</span>
+                    <div className="space-y-3">
+                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Visibility Access</label>
+                        <div className="grid grid-cols-3 gap-3">
+                            <button
+                                type="button"
+                                onClick={() => setAccessLevel("public")}
+                                className={`flex flex-col items-center justify-center p-3 rounded-xl border transition-all ${accessLevel === "public"
+                                        ? "bg-green-50 dark:bg-green-900/20 border-green-500 text-green-700 dark:text-green-400 ring-1 ring-green-500"
+                                        : "bg-background border-border hover:bg-gray-50 dark:hover:bg-gray-800"
+                                    }`}
+                            >
+                                <span className="material-symbols-outlined mb-1">public</span>
+                                <span className="text-xs font-semibold">Public</span>
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() => setAccessLevel("private")}
+                                className={`flex flex-col items-center justify-center p-3 rounded-xl border transition-all ${accessLevel === "private"
+                                        ? "bg-yellow-50 dark:bg-yellow-900/20 border-yellow-500 text-yellow-700 dark:text-yellow-400 ring-1 ring-yellow-500"
+                                        : "bg-background border-border hover:bg-gray-50 dark:hover:bg-gray-800"
+                                    }`}
+                            >
+                                <span className="material-symbols-outlined mb-1">lock</span>
+                                <span className="text-xs font-semibold">Private</span>
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() => setAccessLevel("admin_only")}
+                                className={`flex flex-col items-center justify-center p-3 rounded-xl border transition-all ${accessLevel === "admin_only"
+                                        ? "bg-rose-50 dark:bg-rose-900/20 border-rose-500 text-rose-700 dark:text-rose-400 ring-1 ring-rose-500"
+                                        : "bg-background border-border hover:bg-gray-50 dark:hover:bg-gray-800"
+                                    }`}
+                            >
+                                <span className="material-symbols-outlined mb-1">local_police</span>
+                                <span className="text-xs font-semibold">Admin Only</span>
+                            </button>
                         </div>
-                        <label className="relative inline-flex items-center cursor-pointer">
-                            <input
-                                type="checkbox"
-                                checked={isPrivate}
-                                onChange={(e) => setIsPrivate(e.target.checked)}
-                                className="sr-only peer"
-                            />
-                            <div className="w-11 h-6 bg-gray-300 dark:bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                        </label>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 px-1">
+                            {accessLevel === "public" && "Visible to everyone including guests without login."}
+                            {accessLevel === "private" && "Visible only to logged-in users and admins."}
+                            {accessLevel === "admin_only" && "Strictly visible to users with Admin role."}
+                        </p>
                     </div>
                 </div>
 

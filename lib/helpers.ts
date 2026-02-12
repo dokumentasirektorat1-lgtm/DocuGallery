@@ -36,13 +36,9 @@ export function generateDriveThumbnail(driveLink: string): string {
 
     if (!folderId) return "";
 
-    // Multiple thumbnail strategies (choose based on what works best)
-    // Strategy 1: Google'susercontent domain (best for files)
-    return `https://lh3.googleusercontent.com/d/${folderId}=w400-h300-p-k-no-nu`;
-
-    // Alternative strategies (uncomment to try):
-    // return `https://drive.google.com/thumbnail?id=${folderId}&sz=w400`;
-    // return `https://drive.google.com/uc?export=view&id=${folderId}`;
+    // Use user-requested format: https://drive.google.com/thumbnail?id={FILE_ID}&sz=w600
+    // This assumes folderId can be used for thumbnail endpoint (works for files and folders usually)
+    return `https://drive.google.com/thumbnail?id=${folderId}&sz=w600`;
 }
 
 /**

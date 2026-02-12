@@ -167,6 +167,7 @@ export default function AdminPage() {
                             totalItems={filteredProjects.length}
                             completedProjects={filteredProjects.filter(p => p.status === 'Synced').length}
                             inReview={filteredProjects.filter(p => p.status === 'Indexing').length}
+                            restrictedAssets={filteredProjects.filter(p => p.accessLevel === 'admin_only').length}
                         />
                     </div>
                 </div>

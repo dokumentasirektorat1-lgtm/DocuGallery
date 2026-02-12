@@ -1,0 +1,48 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // --- Helper Functions ---
+    
+    // Check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Check if user has 'admin' role in their user document
+    function isAdmin() {
+      return isAuthenticated() && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // --- Collection Rules ---
+
+    // Projects: The Core Security Logic 🛡️
+    match /projects/{projectId} {
+      // 1. Admin Full Access
+      allow read, write: if isAdmin();
+      
+      // 2. Authenticated Users (Non-Admin)
+      // Can read Public and Private content
+      allow read: if isAuthenticated() && (resource.data.accessLevel == 'public' || resource.data.accessLevel == 'private');
+      
+      // 3. Guests (Unauthenticated)
+      // Can ONLY read Public content
+      allow read: if resource.data.accessLevel == 'public';
+    }
+
+    // Users Collection
+    match /users/{userId} {
+      // Users can read their own profile. Admins can read all.
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      
+      // Users can create their own profile (on first login)
+      allow create: if isAuthenticated() && request.auth.uid == userId;
+      
+      // Only Admin can update roles/status. User can update other fields if needed.
+      allow update: if isAdmin();
+    }
+  }
+}

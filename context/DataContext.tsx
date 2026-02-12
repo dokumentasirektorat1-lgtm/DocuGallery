@@ -13,8 +13,10 @@ import {
     query,
     getDocs,
     writeBatch,
-    serverTimestamp
+    serverTimestamp,
+    where
 } from "firebase/firestore";
+import { useAuth } from "./AuthContext";
 
 interface DataContextType {
     projects: MediaFolder[];
@@ -42,6 +44,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
     const [projects, setProjects] = useState<MediaFolder[]>([]);
     const [users, setUsers] = useState<DummyUser[]>([]);
     const [isInitialized, setIsInitialized] = useState(false);
+    const { userData, loading: authLoading } = useAuth();
 
     // Seeding Logic
     const seedData = async () => {
@@ -82,13 +85,49 @@ export function DataProvider({ children }: { children: ReactNode }) {
         }
     };
 
-    // Real-time Listeners
+    // Real-time Listeners with Security Guard
     useEffect(() => {
-        // Run seeding first
+        if (authLoading) return; // Wait until auth is resolved
+
+        // Run seeding first (only if admin or dev - simplified here)
         seedData();
 
-        // Projects Listener
-        const qProjects = query(collection(db, "projects"));
+        // Projects Listener - The Security Guard 🛡️
+        let qProjects;
+
+        if (userData?.role === 'admin') {
+            // Admin sees EVERYTHING
+            qProjects = query(collection(db, "projects"));
+
+            // Auto-Backfill Migration for Admin
+            // Check if any docs missing accessLevel
+            getDocs(qProjects).then(snap => {
+                const batch = writeBatch(db);
+                let migrationCount = 0;
+                snap.docs.forEach(doc => {
+                    const d = doc.data();
+                    if (!d.accessLevel) {
+                        batch.update(doc.ref, {
+                            accessLevel: d.isPrivate ? "private" : "public",
+                            updatedAt: serverTimestamp()
+                        });
+                        migrationCount++;
+                    }
+                });
+                if (migrationCount > 0) {
+                    console.log(`🛡️ Security Migration: Backfilled ${migrationCount} projects with accessLevel.`);
+                    batch.commit();
+                }
+            });
+
+        } else if (userData) {
+            // Logged in user: Public + Private
+            qProjects = query(collection(db, "projects"), where("accessLevel", "in", ["public", "private"]));
+        } else {
+            // Guest: Public Only
+            qProjects = query(collection(db, "projects"), where("accessLevel", "==", "public"));
+        }
+
         const unsubProjects = onSnapshot(qProjects, (snapshot) => {
             const loadedProjects = snapshot.docs.map(doc => {
                 const project = {
@@ -96,18 +135,20 @@ export function DataProvider({ children }: { children: ReactNode }) {
                     ...doc.data()
                 } as MediaFolder;
 
-                // Quick thumbnail fallback if missing (non-blocking)
+                // Quick thumbnail fallback
                 if (!project.thumbnailUrl && project.contentType === 'drive' && project.driveFolderId) {
-                    // Use simple thumbnail URL generation (no API call)
-                    project.thumbnailUrl = `https://drive.google.com/thumbnail?id=${project.driveFolderId}&sz=w800`;
+                    project.thumbnailUrl = `https://drive.google.com/thumbnail?id=${project.driveFolderId}&sz=w600`;
                 }
 
                 return project;
             });
             setProjects(loadedProjects);
+        }, (error) => {
+            console.error("Firestore Security Block:", error);
+            setProjects([]); // Clear data on security error
         });
 
-        // Users Listener
+        // Users Listener (Admin Only or Self? Simplified for now)
         const qUsers = query(collection(db, "users"));
         const unsubUsers = onSnapshot(qUsers, (snapshot) => {
             const loadedUsers = snapshot.docs.map(doc => ({
@@ -123,7 +164,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
             unsubProjects();
             unsubUsers();
         };
-    }, []);
+    }, [userData, authLoading]);
 
     // Firestore Actions
     const addProject = async (data: Omit<MediaFolder, "id">) => {
@@ -133,9 +174,10 @@ export function DataProvider({ children }: { children: ReactNode }) {
             date: data.date || new Date().toISOString().split('T')[0],
             location: data.location || "",
             category: data.category || "Project",
-            thumbnailUrl: data.thumbnailUrl || "",
+            thumbnailUrl: data.thumbnailUrl || (data.driveFolderId ? `https://drive.google.com/thumbnail?id=${data.driveFolderId}&sz=w600` : ""),
             driveFolderId: data.driveFolderId || "",
             isPrivate: data.isPrivate ?? false,
+            accessLevel: data.accessLevel || (data.isPrivate ? "private" : "public"),
             status: data.status || "Synced",
             contentType: data.contentType || "drive",
             createdAt: serverTimestamp(), // Set creation timestamp
@@ -164,6 +206,11 @@ export function DataProvider({ children }: { children: ReactNode }) {
                 cleanData[key] = value;
             }
         });
+
+        // Smart Update Fallback: If Folder ID changes but no thumbnail provided, auto-generate it
+        if (data.driveFolderId && !data.thumbnailUrl && !cleanData.thumbnailUrl) {
+            cleanData.thumbnailUrl = `https://drive.google.com/thumbnail?id=${data.driveFolderId}&sz=w600`;
+        }
 
         await updateDoc(docRef, cleanData);
     };

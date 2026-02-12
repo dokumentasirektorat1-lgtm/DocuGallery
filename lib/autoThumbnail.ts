@@ -69,12 +69,12 @@ export async function getAutoThumbnail(folderId: string, apiKey?: string): Promi
         // No images found in folder
         console.log('⚠️ No images found in folder:', folderId)
         // Fallback: Use folder thumbnail directly
-        return `https://drive.google.com/thumbnail?id=${folderId}&sz=w500`
+        return `https://drive.google.com/thumbnail?id=${folderId}&sz=w600`
 
     } catch (error) {
         console.error('❌ Error fetching auto-thumbnail:', error)
         // Fallback: Use folder thumbnail directly on error
-        return `https://drive.google.com/thumbnail?id=${folderId}&sz=w500`
+        return `https://drive.google.com/thumbnail?id=${folderId}&sz=w600`
     }
 }
 
@@ -158,8 +158,8 @@ function generateThumbnailUrl(image: DriveImageFile): string {
     }
 
     // Priority 2: Use file ID to generate thumbnail
-    console.log('📌 Using generated thumbnail URL (sz=w1000)')
-    return `https://drive.google.com/thumbnail?id=${image.id}&sz=w1000`
+    console.log('📌 Using generated thumbnail URL (sz=w600)')
+    return `https://drive.google.com/thumbnail?id=${image.id}&sz=w600`
 }
 
 /**
@@ -191,7 +191,7 @@ function getPlaceholderThumbnail(): string {
  */
 export function getQuickThumbnail(folderId: string): string {
     if (!folderId) return getPlaceholderThumbnail()
-    return `https://drive.google.com/thumbnail?id=${folderId}&sz=w1000`
+    return `https://drive.google.com/thumbnail?id=${folderId}&sz=w600`
 }
 
 /**

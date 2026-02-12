@@ -28,11 +28,12 @@ interface DashboardStatsProps {
     totalItems: number
     completedProjects: number
     inReview: number
+    restrictedAssets: number
 }
 
-export function DashboardStats({ totalItems, completedProjects, inReview }: DashboardStatsProps) {
+export function DashboardStats({ totalItems, completedProjects, inReview, restrictedAssets }: DashboardStatsProps) {
     return (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <StatCard
                 icon="folder"
                 label="Total Items"
@@ -53,6 +54,13 @@ export function DashboardStats({ totalItems, completedProjects, inReview }: Dash
                 value={inReview}
                 bgColor="bg-yellow-100 dark:bg-yellow-900/30"
                 iconColor="text-yellow-600 dark:text-yellow-400"
+            />
+            <StatCard
+                icon="local_police"
+                label="Restricted Assets"
+                value={restrictedAssets}
+                bgColor="bg-rose-100 dark:bg-rose-900/30"
+                iconColor="text-rose-600 dark:text-rose-400"
             />
         </div>
     )
