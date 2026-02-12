@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Eye, EyeOff, Sparkles, User } from "lucide-react";
+// Ganti UserSnake dengan UserRound atau hapus saja kalau tidak dipakai
+import { Eye, EyeOff, Mail, Sparkles, UserRound, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
