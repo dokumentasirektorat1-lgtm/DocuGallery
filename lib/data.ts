@@ -13,6 +13,7 @@ export interface MediaFolder {
     postType?: "post" | "video"; // For Facebook content
     createdAt?: any; // Firestore Timestamp - when first created
     updatedAt?: any; // Firestore Timestamp - last modified
+    importId?: string; // Tag for imported batches
 }
 
 export const folders: MediaFolder[] = [

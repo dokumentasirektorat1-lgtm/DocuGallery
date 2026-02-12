@@ -5,6 +5,7 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/context/AuthContext"
+import { useData } from "@/context/DataContext"
 import { auth } from "@/lib/firebase"
 import { signOut } from "firebase/auth"
 
@@ -17,6 +18,8 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
     const pathname = usePathname()
     const router = useRouter()
     const { user, userData } = useAuth()
+    const { users } = useData()
+    const pendingCount = users ? users.filter(u => u.status === "pending").length : 0;
 
     const links = [
         { name: "Project Manager", icon: "folder_managed", href: "/admin" },
@@ -65,18 +68,20 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
         .toUpperCase()
         .slice(0, 2) || 'AD'
 
-    if (!isOpen) return null
+
 
     return (
         <>
             {/* Backdrop - Full Coverage */}
-            {isOpen && (
-                <div
-                    className="fixed inset-0 w-screen h-screen bg-black/50 z-[9998] lg:hidden"
-                    onClick={onClose}
-                    aria-hidden="true"
-                />
-            )}
+            {/* Backdrop - Full Coverage with Fade */}
+            <div
+                className={cn(
+                    "fixed inset-0 w-screen h-screen bg-black/50 z-[9998] lg:hidden transition-opacity duration-300",
+                    isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+                )}
+                onClick={onClose}
+                aria-hidden="true"
+            />
 
             {/* Full Screen Sidebar - 100% Solid, NO Transparency */}
             <aside
@@ -142,13 +147,20 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
                                 : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
                         )}
                     >
-                        <span className={cn(
-                            "material-symbols-outlined text-[22px] transition-transform group-hover:scale-110",
-                            pathname === "/admin/requests" ? "text-white" : "text-primary"
-                        )}>
-                            how_to_reg
-                        </span>
-                        <span className="font-medium">Access Requests</span>
+                        <div className="flex items-center gap-2 w-full">
+                            <span className={cn(
+                                "material-symbols-outlined text-[22px] transition-transform group-hover:scale-110",
+                                pathname === "/admin/requests" ? "text-white" : "text-primary"
+                            )}>
+                                how_to_reg
+                            </span>
+                            <span className="font-medium">Access Requests</span>
+                            {pendingCount > 0 && (
+                                <span className="ml-auto px-2 py-0.5 text-xs font-bold text-white bg-red-500 rounded-full animate-pulse shadow-sm shadow-red-500/20">
+                                    {pendingCount}
+                                </span>
+                            )}
+                        </div>
                     </Link>
 
                     <Link

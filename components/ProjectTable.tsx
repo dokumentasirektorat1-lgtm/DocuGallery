@@ -14,11 +14,11 @@ interface ProjectTableProps {
     projects: MediaFolder[]
     onEdit?: (project: MediaFolder) => void
     onDelete?: (id: string) => void
-    onBulkDelete?: (ids: string[]) => void
+    selectedIds: Set<string>
+    onSelectionChange: (ids: Set<string>) => void
 }
 
-export function ProjectTable({ projects, onEdit, onDelete, onBulkDelete }: ProjectTableProps) {
-    const [selectedIds, setSelectedIds] = useState<string[]>([])
+export function ProjectTable({ projects, onEdit, onDelete, selectedIds, onSelectionChange }: ProjectTableProps) {
     const [currentPage, setCurrentPage] = useState(1)
     const [itemsPerPage, setItemsPerPage] = useState(10)
     const [sortField, setSortField] = useState<SortField>('createdAt')
@@ -27,10 +27,8 @@ export function ProjectTable({ projects, onEdit, onDelete, onBulkDelete }: Proje
     // Sort handler
     const handleSort = (field: SortField) => {
         if (sortField === field) {
-            // Toggle order if clicking same field
             setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
         } else {
-            // New field, default to descending
             setSortField(field)
             setSortOrder('desc')
         }
@@ -44,11 +42,8 @@ export function ProjectTable({ projects, onEdit, onDelete, onBulkDelete }: Proje
             if (sortField === 'title') {
                 comparison = a.title.localeCompare(b.title)
             } else if (sortField === 'date') {
-                const dateA = new Date(a.date).getTime() || 0
-                const dateB = new Date(b.date).getTime() || 0
-                comparison = dateA - dateB
+                comparison = (new Date(a.date).getTime() || 0) - (new Date(b.date).getTime() || 0)
             } else if (sortField === 'createdAt') {
-                // Use createdAt if available, otherwise use date
                 const timeA = (a as any).createdAt?.toDate?.().getTime() || new Date(a.date).getTime() || 0
                 const timeB = (b as any).createdAt?.toDate?.().getTime() || new Date(b.date).getTime() || 0
                 comparison = timeA - timeB
@@ -58,52 +53,42 @@ export function ProjectTable({ projects, onEdit, onDelete, onBulkDelete }: Proje
         })
     }, [projects, sortField, sortOrder])
 
-    // Pagination calculations (using sorted projects)
+    // Pagination
     const totalPages = Math.ceil(sortedProjects.length / itemsPerPage)
     const startIndex = (currentPage - 1) * itemsPerPage
     const paginatedProjects = sortedProjects.slice(startIndex, startIndex + itemsPerPage)
 
-    const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleSelectAllPage = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newSet = new Set(selectedIds)
         if (e.target.checked) {
-            setSelectedIds(paginatedProjects.map(p => p.id))
+            paginatedProjects.forEach(p => newSet.add(p.id))
         } else {
-            setSelectedIds([])
+            paginatedProjects.forEach(p => newSet.delete(p.id))
         }
+        onSelectionChange(newSet)
     }
 
     const handleSelectOne = (id: string, checked: boolean) => {
+        const newSet = new Set(selectedIds)
         if (checked) {
-            setSelectedIds(prev => [...prev, id])
+            newSet.add(id)
         } else {
-            setSelectedIds(prev => prev.filter(selectedId => selectedId !== id))
+            newSet.delete(id)
         }
+        onSelectionChange(newSet)
     }
-
-    const handleBulkDelete = () => {
-        if (onBulkDelete && selectedIds.length > 0) {
-            onBulkDelete(selectedIds)
-            setSelectedIds([])
-        }
-    }
-
-    const handleSingleDelete = (id: string) => {
-        onDelete?.(id)
-    }
-
 
     const handlePageChange = (page: number) => {
         setCurrentPage(page)
-        setSelectedIds([]) // Clear selection on page change
     }
 
     const handleItemsPerPageChange = (value: number) => {
         setItemsPerPage(value)
-        setCurrentPage(1) // Reset to first page
-        setSelectedIds([])
+        setCurrentPage(1)
     }
 
-    const allSelected = paginatedProjects.length > 0 && selectedIds.length === paginatedProjects.length
-    const someSelected = selectedIds.length > 0 && selectedIds.length < paginatedProjects.length
+    const allOnPageSelected = paginatedProjects.length > 0 && paginatedProjects.every(p => selectedIds.has(p.id))
+    const someOnPageSelected = paginatedProjects.some(p => selectedIds.has(p.id)) && !allOnPageSelected
 
     // Sort icon component
     const SortIcon = ({ field }: { field: SortField }) => {
@@ -199,11 +184,11 @@ export function ProjectTable({ projects, onEdit, onDelete, onBulkDelete }: Proje
                                 <th className="px-6 py-4 w-12">
                                     <input
                                         type="checkbox"
-                                        checked={allSelected}
+                                        checked={allOnPageSelected}
                                         ref={input => {
-                                            if (input) input.indeterminate = someSelected
+                                            if (input) input.indeterminate = someOnPageSelected
                                         }}
-                                        onChange={handleSelectAll}
+                                        onChange={handleSelectAllPage}
                                         className="w-4 h-4 rounded border-gray-300 dark:border-white/20 bg-transparent text-primary focus:ring-primary cursor-pointer transition-colors"
                                     />
                                 </th>
@@ -246,13 +231,13 @@ export function ProjectTable({ projects, onEdit, onDelete, onBulkDelete }: Proje
                                     key={project.id}
                                     className={cn(
                                         "border-b border-border dark:border-white/5 hover:bg-gray-50 dark:hover:bg-primary/10 transition-colors group",
-                                        selectedIds.includes(project.id) && "bg-cyan-50 dark:bg-primary/20"
+                                        selectedIds.has(project.id) && "bg-cyan-50 dark:bg-primary/20"
                                     )}
                                 >
                                     <td className="px-6 py-4">
                                         <input
                                             type="checkbox"
-                                            checked={selectedIds.includes(project.id)}
+                                            checked={selectedIds.has(project.id)}
                                             onChange={(e) => handleSelectOne(project.id, e.target.checked)}
                                             className="w-4 h-4 rounded border-gray-300 dark:border-white/20 bg-transparent text-primary focus:ring-primary cursor-pointer transition-colors"
                                         />
@@ -332,7 +317,7 @@ export function ProjectTable({ projects, onEdit, onDelete, onBulkDelete }: Proje
                                             </button>
                                             {/* DELETE BUTTON - Centered Icon */}
                                             <button
-                                                onClick={() => handleSingleDelete(project.id)}
+                                                onClick={() => onDelete?.(project.id)}
                                                 className="p-2 bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-800/60 rounded-lg transition-all shadow-sm hover:shadow-md flex items-center justify-center min-w-[36px] min-h-[36px]"
                                                 title="Delete"
                                             >
@@ -401,12 +386,7 @@ export function ProjectTable({ projects, onEdit, onDelete, onBulkDelete }: Proje
                 </div>
             </div>
 
-            {/* Bulk Actions Toolbar */}
-            <BulkActionsToolbar
-                selectedCount={selectedIds.length}
-                onDelete={handleBulkDelete}
-                onClear={() => setSelectedIds([])}
-            />
+            {/* Bulk Actions Toolbar removed - moved to parent */}
         </>
     )
 }

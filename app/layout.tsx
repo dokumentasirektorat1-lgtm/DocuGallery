@@ -18,8 +18,29 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "DocuGallery Hub",
-  description: "Enterprise documentation and gallery platform",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://display-dokumentasi.vercel.app'),
+  title: {
+    default: "DocuGallery Hub",
+    template: "%s | DocuGallery Hub"
+  },
+  description: "Enterprise documentation and gallery platform for managing media content and campaigns.",
+  openGraph: {
+    title: "DocuGallery Hub",
+    description: "Enterprise documentation and gallery platform for managing media content and campaigns.",
+    url: '/',
+    siteName: 'DocuGallery Hub',
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'DocuGallery Hub',
+    description: "Enterprise documentation and gallery platform.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  }
 };
 
 export default function RootLayout({

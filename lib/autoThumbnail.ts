@@ -68,13 +68,13 @@ export async function getAutoThumbnail(folderId: string, apiKey?: string): Promi
 
         // No images found in folder
         console.log('⚠️ No images found in folder:', folderId)
-        // Fallback: Use folder thumbnail directly
-        return `https://drive.google.com/thumbnail?id=${folderId}&sz=w600`
+        // Fallback: Use placeholder
+        return getPlaceholderThumbnail()
 
     } catch (error) {
         console.error('❌ Error fetching auto-thumbnail:', error)
-        // Fallback: Use folder thumbnail directly on error
-        return `https://drive.google.com/thumbnail?id=${folderId}&sz=w600`
+        // Fallback: Use placeholder on error
+        return getPlaceholderThumbnail()
     }
 }
 
@@ -146,20 +146,12 @@ function selectBestImage(images: DriveImageFile[]): DriveImageFile | null {
 
 /**
  * Generate high-quality thumbnail URL from selected image
- * Uses sz=w1000 for sharp, non-pixelated display
+ * Uses LH3 direct link format
  */
 function generateThumbnailUrl(image: DriveImageFile): string {
-    // Priority 1: Use thumbnailLink with high quality
-    if (image.thumbnailLink) {
-        // Replace default size with w1000 for maximum quality
-        const highQualityThumb = image.thumbnailLink.replace(/=s\d+/, '=s1000')
-        console.log('📌 Using high-quality thumbnailLink (w1000)')
-        return highQualityThumb
-    }
-
-    // Priority 2: Use file ID to generate thumbnail
-    console.log('📌 Using generated thumbnail URL (sz=w600)')
-    return `https://drive.google.com/thumbnail?id=${image.id}&sz=w600`
+    // Priority 1: Use direct LH3 link with ID
+    console.log('📌 Using LH3 direct link')
+    return `https://lh3.googleusercontent.com/d/${image.id}`
 }
 
 /**
@@ -184,14 +176,13 @@ function getPlaceholderThumbnail(): string {
 
 /**
  * Synchronous thumbnail generation (fallback)
- * Uses standard Drive thumbnail endpoint with w1000 quality
+ * Uses placeholder for folder IDs to avoid broken LH3 links
  * 
  * @param folderId - Google Drive folder ID
  * @returns Thumbnail URL
  */
 export function getQuickThumbnail(folderId: string): string {
-    if (!folderId) return getPlaceholderThumbnail()
-    return `https://drive.google.com/thumbnail?id=${folderId}&sz=w600`
+    return getPlaceholderThumbnail()
 }
 
 /**

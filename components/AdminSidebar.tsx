@@ -4,6 +4,7 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/context/AuthContext"
+import { useData } from "@/context/DataContext"
 import { auth } from "@/lib/firebase"
 import { signOut } from "firebase/auth"
 
@@ -11,6 +12,9 @@ export function AdminSidebar() {
     const pathname = usePathname();
     const router = useRouter();
     const { user, userData } = useAuth();
+    const { users } = useData();
+
+    const pendingCount = users ? users.filter(u => u.status === "pending").length : 0;
 
     const links = [
         { name: "Project Manager", icon: "folder_managed", href: "/admin" },
@@ -56,11 +60,18 @@ export function AdminSidebar() {
                                     : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-primary/5"
                             )}
                         >
-                            <span className={cn(
-                                "material-symbols-outlined text-[20px]",
-                                isActive ? "text-primary" : "text-slate-600 dark:text-slate-300"
-                            )}>{link.icon}</span>
-                            {link.name}
+                            <div className="flex items-center gap-2 w-full">
+                                <span className={cn(
+                                    "material-symbols-outlined text-[20px]",
+                                    isActive ? "text-primary" : "text-slate-600 dark:text-slate-300"
+                                )}>{link.icon}</span>
+                                {link.name}
+                                {link.name === "Access Requests" && pendingCount > 0 && (
+                                    <span className="ml-auto px-2 py-0.5 text-xs font-bold text-white bg-red-500 rounded-full animate-pulse shadow-sm shadow-red-500/20">
+                                        {pendingCount}
+                                    </span>
+                                )}
+                            </div>
                         </Link>
                     )
                 })}

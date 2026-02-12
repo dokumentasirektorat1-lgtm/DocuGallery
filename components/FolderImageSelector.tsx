@@ -69,8 +69,8 @@ export function FolderImageSelector({ folderId, isOpen, onClose, onSelect }: Fol
 
     const handleSelectImage = (image: DriveImage) => {
         setSelectedImageId(image.id)
-        // Generate thumbnail URL
-        const thumbnailUrl = `https://drive.google.com/thumbnail?id=${image.id}&sz=w500`
+        // Generate thumbnail URL (Quota efficient format)
+        const thumbnailUrl = `https://lh3.googleusercontent.com/d/${image.id}`
         onSelect(thumbnailUrl)
         onClose()
     }
@@ -128,8 +128,8 @@ export function FolderImageSelector({ folderId, isOpen, onClose, onSelect }: Fol
                                     key={image.id}
                                     onClick={() => handleSelectImage(image)}
                                     className={`group relative aspect-square rounded-lg overflow-hidden border-2 transition-all ${selectedImageId === image.id
-                                            ? "border-primary shadow-lg scale-105"
-                                            : "border-border hover:border-primary/50 hover:scale-105"
+                                        ? "border-primary shadow-lg scale-105"
+                                        : "border-border hover:border-primary/50 hover:scale-105"
                                         }`}
                                 >
                                     {image.thumbnailLink ? (

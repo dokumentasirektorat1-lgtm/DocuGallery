@@ -51,8 +51,9 @@ export function MediaCard({ folder }: MediaCardProps) {
     // Privacy gate logic
     const isGuest = !user
     const isPendingUser = user && userData?.status === "pending"
-    const isPrivateContent = folder.isPrivate
-    const canAccess = !isPrivateContent || (user && userData?.status === "approved")
+    // Check both legacy boolean and new accessLevel
+    const isPrivateContent = folder.isPrivate || folder.accessLevel === 'private' || folder.accessLevel === 'admin_only'
+    const canAccess = !isPrivateContent || (user && userData?.status === "approved") || (user && userData?.role === 'admin')
 
     const handleCardClick = () => {
         if (!canAccess) {
@@ -81,7 +82,7 @@ export function MediaCard({ folder }: MediaCardProps) {
                     "px-3 py-1 text-xs font-medium rounded-full shadow-lg backdrop-blur-md",
                     isFacebookContent
                         ? "bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300"
-                        : folder.isPrivate
+                        : isPrivateContent
                             ? "bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300"
                             : "bg-cyan-100 dark:bg-cyan-900/60 text-cyan-700 dark:text-cyan-300"
                 )}>
@@ -89,19 +90,21 @@ export function MediaCard({ folder }: MediaCardProps) {
                 </span>
             </div>
 
-            {/* Share Button */}
-            <button
-                onClick={handleShare}
-                className="absolute top-3 right-3 z-30 p-1.5 rounded-full bg-white/90 dark:bg-black/60 hover:bg-white dark:hover:bg-gray-800 backdrop-blur-md text-gray-600 dark:text-gray-300 hover:text-primary transition-colors shadow-sm"
-                title={folder.isPrivate ? "Share Internal Link" : "Share Link"}
-            >
-                <span className="material-symbols-outlined text-[18px]">ios_share</span>
-            </button>
+            {/* Share Button - ONLY visible if user can access */}
+            {canAccess && (
+                <button
+                    onClick={handleShare}
+                    className="absolute top-3 right-3 z-30 p-1.5 rounded-full bg-white/90 dark:bg-black/60 hover:bg-white dark:hover:bg-gray-800 backdrop-blur-md text-gray-600 dark:text-gray-300 hover:text-primary transition-colors shadow-sm"
+                    title={isPrivateContent ? "Share Internal Link" : "Share Link"}
+                >
+                    <span className="material-symbols-outlined text-[18px]">ios_share</span>
+                </button>
+            )}
 
             {/* Toast Notification */}
             {showToast && (
                 <div className="absolute top-12 right-3 z-40 px-3 py-1.5 bg-black/80 text-white text-xs font-medium rounded-lg animate-in fade-in zoom-in duration-200">
-                    {folder.isPrivate ? "Internal link copied!" : "Link copied!"}
+                    {isPrivateContent ? "Internal link copied!" : "Link copied!"}
                 </div>
             )}
 
@@ -134,7 +137,7 @@ export function MediaCard({ folder }: MediaCardProps) {
                 <div className="flex items-start gap-2">
                     <h3 className="text-base font-bold text-foreground leading-snug line-clamp-2 flex-1">{folder.title}</h3>
                     <div className="flex items-center gap-1 flex-shrink-0">
-                        {folder.isPrivate && <span className="material-symbols-outlined text-gray-400 dark:text-gray-500 text-[16px] mt-0.5">lock</span>}
+                        {isPrivateContent && <span className="material-symbols-outlined text-gray-400 dark:text-gray-500 text-[16px] mt-0.5">lock</span>}
                         {isFacebookContent && <span className="material-symbols-outlined text-blue-500 text-[18px] mt-0.5">facebook</span>}
                     </div>
                 </div>

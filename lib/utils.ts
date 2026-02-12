@@ -10,19 +10,18 @@ export function convertDriveToThumbnail(link: string): string {
 
   // Check if it's a google drive file link and extract ID
   // Standard view link: https://drive.google.com/file/d/ITEM_ID/view?usp=sharing
-  // We want: https://drive.google.com/thumbnail?id=ITEM_ID&sz=w600
+  // We want: https://lh3.googleusercontent.com/d/ITEM_ID
 
-  const driveRegex = /\/d\/([a-zA-Z0-9_-]+)/;
+  // EXPLICITLY IGNORE FOLDER LINKS
+  if (link.includes("/folders/")) {
+    return link;
+  }
+
+  const driveRegex = /(?:\/d\/|id=|d\/)([-\w]+)/;
   const match = link.match(driveRegex);
 
   if (match && match[1]) {
-    return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w600`;
-  }
-
-  // Also check if ID is query param (e.g. ?id=...)
-  const queryMatch = link.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-  if (queryMatch && queryMatch[1]) {
-    return `https://drive.google.com/thumbnail?id=${queryMatch[1]}&sz=w600`;
+    return `https://lh3.googleusercontent.com/d/${match[1]}`;
   }
 
   // Return original if no match (assumes it's a direct link or valid URL)

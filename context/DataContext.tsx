@@ -120,12 +120,10 @@ export function DataProvider({ children }: { children: ReactNode }) {
                 }
             });
 
-        } else if (userData) {
-            // Logged in user: Public + Private
-            qProjects = query(collection(db, "projects"), where("accessLevel", "in", ["public", "private"]));
         } else {
-            // Guest: Public Only
-            qProjects = query(collection(db, "projects"), where("accessLevel", "==", "public"));
+            // User + Guest: Public + Private
+            // Guest juga perlu melihat item Private (agar bisa ditampilkan sebagai item terkunci/limited)
+            qProjects = query(collection(db, "projects"), where("accessLevel", "in", ["public", "private"]));
         }
 
         const unsubProjects = onSnapshot(qProjects, (snapshot) => {
@@ -138,6 +136,15 @@ export function DataProvider({ children }: { children: ReactNode }) {
                 // Quick thumbnail fallback
                 if (!project.thumbnailUrl && project.contentType === 'drive' && project.driveFolderId) {
                     project.thumbnailUrl = `https://drive.google.com/thumbnail?id=${project.driveFolderId}&sz=w600`;
+                }
+
+                // 🔒 DATA SANITIZATION (Prevent Link Leaks)
+                // Jika user bukan Admin/Approved, sembunyikan link asli folder Private
+                const isAuthorized = userData?.role === 'admin' || userData?.status === 'approved';
+                if (!isAuthorized && (project.accessLevel === 'private' || project.isPrivate)) {
+                    project.driveFolderId = "PROTECTED_CONTENT"; // Obfuscate sensitive ID
+                    // Note: thumbnailUrl tetap dibiarkan agar gambar bisa tampil (blur), 
+                    // tapi link folder utama diamankan.
                 }
 
                 return project;

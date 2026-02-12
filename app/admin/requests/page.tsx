@@ -9,6 +9,9 @@ import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { showSuccessToast, showErrorToast } from "@/lib/toast";
+import { deleteDoc, doc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { showConfirm, showSuccess } from "@/lib/sweetalert";
 
 export default function AccessRequestsPage() {
     const { users, updateUserStatus, updateUser } = useData();
@@ -56,6 +59,30 @@ export default function AccessRequestsPage() {
             showSuccessToast("User rejected");
         } catch (error) {
             showErrorToast("Failed to reject user");
+        }
+    };
+
+    const handleDeleteUser = async (user: DummyUser) => {
+        const isConfirmed = await showConfirm(
+            "Delete User?",
+            `Are you sure you want to delete ${user.email}?`,
+            "Yes, delete",
+            "Cancel danger"
+        );
+
+        if (isConfirmed) {
+            try {
+                // Delete Firestore document
+                await deleteDoc(doc(db, "users", user.id));
+
+                // Show success message with important note
+                await showSuccess(
+                    "User removed from database.",
+                    "NOTE: To allow re-registration with this email, please also delete the user from Firebase Console > Authentication."
+                );
+            } catch (error: any) {
+                showErrorToast("Failed to delete user: " + error.message);
+            }
         }
     };
 
@@ -110,6 +137,13 @@ export default function AccessRequestsPage() {
                                                                 className="px-3 py-1.5 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-800/50 rounded-lg text-xs font-medium transition-colors"
                                                             >
                                                                 Reject
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleDeleteUser(user)}
+                                                                className="px-3 py-1.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-700 dark:hover:text-red-400 rounded-lg text-xs font-medium transition-colors"
+                                                                title="Delete User"
+                                                            >
+                                                                Delete
                                                             </button>
                                                         </div>
                                                     </td>
@@ -180,6 +214,13 @@ export default function AccessRequestsPage() {
                                                                 title="Send password reset"
                                                             >
                                                                 <span className="material-symbols-outlined text-[18px]">lock_reset</span>
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleDeleteUser(user)}
+                                                                className="p-1.5 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-800/50 rounded-lg transition-colors"
+                                                                title="Delete User"
+                                                            >
+                                                                <span className="material-symbols-outlined text-[18px]">delete</span>
                                                             </button>
                                                         </div>
                                                     </td>

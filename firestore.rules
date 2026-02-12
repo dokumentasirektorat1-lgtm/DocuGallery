@@ -24,13 +24,10 @@ service cloud.firestore {
       // 1. Admin Full Access
       allow read, write: if isAdmin();
       
-      // 2. Authenticated Users (Non-Admin)
-      // Can read Public and Private content
-      allow read: if isAuthenticated() && (resource.data.accessLevel == 'public' || resource.data.accessLevel == 'private');
-      
-      // 3. Guests (Unauthenticated)
-      // Can ONLY read Public content
-      allow read: if resource.data.accessLevel == 'public';
+      // 2. Guests & Users (Non-Admin)
+      // Access to Public AND Private content (Private content is restricted/blurred by UI Only)
+      // CRITICAL: 'admin_only' content remains HIDDEN from database level.
+      allow read: if resource.data.accessLevel == 'public' || resource.data.accessLevel == 'private';
     }
 
     // Users Collection

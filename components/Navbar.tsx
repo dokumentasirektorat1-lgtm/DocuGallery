@@ -63,11 +63,14 @@ export function Navbar() {
                                 <div className="text-[10px] text-gray-500 uppercase">{userData?.role || "User"}</div>
                             </div>
                             {userData?.role === "admin" && (
-                                <Link href="/admin" className="hidden lg:flex px-3 py-1.5 text-sm font-medium bg-primary/10 text-primary hover:bg-primary/20 rounded-lg transition-colors items-center gap-2">
+                                <Link href="/admin" className="flex px-3 py-1.5 text-sm font-medium bg-primary/10 text-primary hover:bg-primary/20 rounded-lg transition-colors items-center gap-2">
                                     <span className="material-symbols-outlined text-[18px]">dashboard</span>
-                                    Dashboard
+                                    <span className="hidden sm:inline">Dashboard</span>
                                 </Link>
                             )}
+                            <Link href="/settings" className="p-2 min-w-[44px] min-h-[44px] rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 hover:text-foreground transition-colors flex items-center justify-center" title="User Settings">
+                                <span className="material-symbols-outlined">settings</span>
+                            </Link>
                             <button
                                 onClick={() => auth.signOut()}
                                 className="p-2 min-w-[44px] min-h-[44px] rounded-full hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-500 hover:text-red-500 dark:hover:text-red-400 transition-colors flex items-center justify-center"

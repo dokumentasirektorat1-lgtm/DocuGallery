@@ -26,12 +26,12 @@ function StatCard({ icon, label, value, bgColor, iconColor }: StatCardProps) {
 
 interface DashboardStatsProps {
     totalItems: number
-    completedProjects: number
-    inReview: number
-    restrictedAssets: number
+    publicItems: number
+    privateItems: number
+    restrictedItems: number
 }
 
-export function DashboardStats({ totalItems, completedProjects, inReview, restrictedAssets }: DashboardStatsProps) {
+export function DashboardStats({ totalItems, publicItems, privateItems, restrictedItems }: DashboardStatsProps) {
     return (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <StatCard
@@ -42,23 +42,23 @@ export function DashboardStats({ totalItems, completedProjects, inReview, restri
                 iconColor="text-primary"
             />
             <StatCard
-                icon="check_circle"
-                label="Completed Projects"
-                value={completedProjects}
+                icon="public"
+                label="Public Items"
+                value={publicItems}
                 bgColor="bg-green-100 dark:bg-green-900/30"
                 iconColor="text-green-600 dark:text-green-400"
             />
             <StatCard
-                icon="hourglass_empty"
-                label="In Review"
-                value={inReview}
+                icon="lock"
+                label="Private Items"
+                value={privateItems}
                 bgColor="bg-yellow-100 dark:bg-yellow-900/30"
                 iconColor="text-yellow-600 dark:text-yellow-400"
             />
             <StatCard
                 icon="local_police"
-                label="Restricted Assets"
-                value={restrictedAssets}
+                label="Restricted Items"
+                value={restrictedItems}
                 bgColor="bg-rose-100 dark:bg-rose-900/30"
                 iconColor="text-rose-600 dark:text-rose-400"
             />

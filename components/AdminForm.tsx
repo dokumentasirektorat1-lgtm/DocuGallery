@@ -91,6 +91,12 @@ export function AdminForm({ initialData, onSubmit, onCancel, isEditing = false }
         let finalThumbnail = ""
 
         if ((thumbnailType === "custom" || thumbnailType === "upload" || thumbnailType === "folder") && thumbnailInput) {
+            // SAFETY CHECK: Ensure user didn't paste a Folder link manually
+            if (thumbnailInput.includes("/folders/") || thumbnailInput.includes("drive.google.com/drive/u/0/folders/")) {
+                showErrorToast("Ini ID Folder! Silakan gunakan link File gambar (buka gambar -> copy link).");
+                return;
+            }
+
             // Use provided thumbnail
             finalThumbnail = thumbnailType === "custom" ? convertDriveToThumbnail(thumbnailInput) : thumbnailInput
         } else if (thumbnailType === "auto" && !isFacebook) {
@@ -314,8 +320,8 @@ export function AdminForm({ initialData, onSubmit, onCancel, isEditing = false }
                                 type="button"
                                 onClick={() => setAccessLevel("public")}
                                 className={`flex flex-col items-center justify-center p-3 rounded-xl border transition-all ${accessLevel === "public"
-                                        ? "bg-green-50 dark:bg-green-900/20 border-green-500 text-green-700 dark:text-green-400 ring-1 ring-green-500"
-                                        : "bg-background border-border hover:bg-gray-50 dark:hover:bg-gray-800"
+                                    ? "bg-green-50 dark:bg-green-900/20 border-green-500 text-green-700 dark:text-green-400 ring-1 ring-green-500"
+                                    : "bg-background border-border hover:bg-gray-50 dark:hover:bg-gray-800"
                                     }`}
                             >
                                 <span className="material-symbols-outlined mb-1">public</span>
@@ -326,8 +332,8 @@ export function AdminForm({ initialData, onSubmit, onCancel, isEditing = false }
                                 type="button"
                                 onClick={() => setAccessLevel("private")}
                                 className={`flex flex-col items-center justify-center p-3 rounded-xl border transition-all ${accessLevel === "private"
-                                        ? "bg-yellow-50 dark:bg-yellow-900/20 border-yellow-500 text-yellow-700 dark:text-yellow-400 ring-1 ring-yellow-500"
-                                        : "bg-background border-border hover:bg-gray-50 dark:hover:bg-gray-800"
+                                    ? "bg-yellow-50 dark:bg-yellow-900/20 border-yellow-500 text-yellow-700 dark:text-yellow-400 ring-1 ring-yellow-500"
+                                    : "bg-background border-border hover:bg-gray-50 dark:hover:bg-gray-800"
                                     }`}
                             >
                                 <span className="material-symbols-outlined mb-1">lock</span>
@@ -338,8 +344,8 @@ export function AdminForm({ initialData, onSubmit, onCancel, isEditing = false }
                                 type="button"
                                 onClick={() => setAccessLevel("admin_only")}
                                 className={`flex flex-col items-center justify-center p-3 rounded-xl border transition-all ${accessLevel === "admin_only"
-                                        ? "bg-rose-50 dark:bg-rose-900/20 border-rose-500 text-rose-700 dark:text-rose-400 ring-1 ring-rose-500"
-                                        : "bg-background border-border hover:bg-gray-50 dark:hover:bg-gray-800"
+                                    ? "bg-rose-50 dark:bg-rose-900/20 border-rose-500 text-rose-700 dark:text-rose-400 ring-1 ring-rose-500"
+                                    : "bg-background border-border hover:bg-gray-50 dark:hover:bg-gray-800"
                                     }`}
                             >
                                 <span className="material-symbols-outlined mb-1">local_police</span>
