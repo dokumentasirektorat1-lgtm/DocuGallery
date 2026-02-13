@@ -16,6 +16,25 @@ interface DriveImageFile {
 }
 
 /**
+ * Repair thumbnail URL to ensure HTTPS
+ * @param url - The URL to repair
+ * @returns The repaired URL
+ */
+export function repairThumbnail(url: string | undefined): string {
+    if (!url) return getPlaceholderThumbnail()
+
+    // Force HTTPS
+    let repairedUrl = url.replace(/^http:\/\//i, 'https://')
+
+    // Ensure googleusercontent domains are using HTTPS
+    if (repairedUrl.includes('googleusercontent.com') && !repairedUrl.startsWith('https://')) {
+        repairedUrl = `https://${repairedUrl.replace(/^\/\//, '')}`
+    }
+
+    return repairedUrl
+}
+
+/**
  * Get auto-generated thumbnail from Google Drive folder with BEST VISUAL PICKER
  * Intelligently selects the best image based on:
  * 1. Filename keywords (cover, thumb, main, thumbnail)
@@ -58,7 +77,7 @@ export async function getAutoThumbnail(folderId: string, apiKey?: string): Promi
             console.log(`📸 Found ${images.length} images in folder`)
 
             // BEST VISUAL PICKER LOGIC
-            const bestImage = selectBestImage(images)
+            const bestImage = selectImage(images)
 
             if (bestImage) {
                 console.log(`🏆 Best image selected: ${bestImage.name}`)
@@ -85,7 +104,7 @@ export async function getAutoThumbnail(folderId: string, apiKey?: string): Promi
  * 2. Highest resolution
  * 3. Largest file size
  */
-function selectBestImage(images: DriveImageFile[]): DriveImageFile | null {
+function selectImage(images: DriveImageFile[]): DriveImageFile | null {
     if (images.length === 0) return null
     if (images.length === 1) return images[0]
 

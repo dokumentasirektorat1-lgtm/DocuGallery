@@ -7,6 +7,7 @@ import { useAuth } from "@/context/AuthContext"
 import { cn } from "@/lib/utils"
 import { generateInternalLink, isFacebookLink } from "@/lib/helpers"
 import { showInfo } from "@/lib/sweetalert"
+import { repairThumbnail } from "@/lib/autoThumbnail"
 
 interface MediaCardProps {
     folder: MediaFolder
@@ -67,6 +68,7 @@ export function MediaCard({ folder }: MediaCardProps) {
 
     // Determine icon based on content type
     const isFacebookContent = folder.contentType === "facebook"
+    const displayThumbnail = repairThumbnail(folder.thumbnailUrl)
 
     return (
         <div
@@ -109,12 +111,13 @@ export function MediaCard({ folder }: MediaCardProps) {
             )}
 
             <div className="relative aspect-[4/3] overflow-hidden bg-gray-200 dark:bg-[#283639] flex items-center justify-center">
-                {folder.thumbnailUrl ? (
+                {displayThumbnail ? (
                     <Image
-                        src={folder.thumbnailUrl}
+                        src={displayThumbnail}
                         alt={folder.title}
                         fill
                         loading="lazy"
+                        unoptimized
                         className="object-cover transition-transform duration-500 group-hover:scale-110"
                     />
                 ) : (

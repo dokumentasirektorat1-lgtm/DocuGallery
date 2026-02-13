@@ -246,7 +246,7 @@ export default function AdminPage() {
                             <ProjectTable
                                 projects={filteredProjects}
                                 onEdit={handleEdit}
-                                onDelete={deleteProject}
+                                onDelete={handleDelete}
                                 selectedIds={selectedIds}
                                 onSelectionChange={handleSelectionChange}
                             />

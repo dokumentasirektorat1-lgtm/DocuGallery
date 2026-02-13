@@ -315,7 +315,6 @@ export function ProjectTable({ projects, onEdit, onDelete, selectedIds, onSelect
                                             >
                                                 <span className="material-symbols-outlined text-[20px] leading-none">edit</span>
                                             </button>
-                                            {/* DELETE BUTTON - Centered Icon */}
                                             <button
                                                 onClick={() => onDelete?.(project.id)}
                                                 className="p-2 bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-800/60 rounded-lg transition-all shadow-sm hover:shadow-md flex items-center justify-center min-w-[36px] min-h-[36px]"
