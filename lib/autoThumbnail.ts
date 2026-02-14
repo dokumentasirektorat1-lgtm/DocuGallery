@@ -23,12 +23,39 @@ interface DriveImageFile {
 export function repairThumbnail(url: string | undefined): string {
     if (!url) return getPlaceholderThumbnail()
 
-    // Force HTTPS
-    let repairedUrl = url.replace(/^http:\/\//i, 'https://')
+    // SAFEGUARD 1: Meta/Facebook Domain Filter
+    // If link contains facebook.com or fbcdn.net, SKIP processing to prevent breaking valid tokens
+    if (url.includes('facebook.com') || url.includes('fbcdn.net')) {
+        return url
+    }
 
-    // Ensure googleusercontent domains are using HTTPS
-    if (repairedUrl.includes('googleusercontent.com') && !repairedUrl.startsWith('https://')) {
-        repairedUrl = `https://${repairedUrl.replace(/^\/\//, '')}`
+    // SAFEGUARD 2: Domain Whitelist
+    // Only process Google Drive related domains or relative paths
+    // If it's another external domain (e.g. Unsplash, privately hosted), return as is
+    const isGoogleDomain = url.includes('drive.google.com') ||
+        url.includes('googleusercontent.com')
+
+    if (!isGoogleDomain && url.startsWith('http')) {
+        return url
+    }
+
+    // TRANSFORM: Fix Google Drive Links to HTTPS
+    let repairedUrl = url
+
+    // Fix protocol-relative URLs or plain http
+    if (repairedUrl.startsWith('//')) {
+        repairedUrl = `https:${repairedUrl}`
+    } else if (repairedUrl.startsWith('http://')) {
+        repairedUrl = repairedUrl.replace(/^http:\/\//i, 'https://')
+    } else if (!repairedUrl.startsWith('https://') && repairedUrl.includes('googleusercontent.com')) {
+        // Handle naked domains if necessary
+        repairedUrl = `https://${repairedUrl}`
+    }
+
+    // SAFEGUARD 3: Prevent re-processing valid Profile/Specific URLs
+    // If it matches the specific profile picture pattern and is already HTTPS, leave it matches
+    if (repairedUrl.includes('/profile/picture/') && repairedUrl.startsWith('https://')) {
+        return repairedUrl
     }
 
     return repairedUrl

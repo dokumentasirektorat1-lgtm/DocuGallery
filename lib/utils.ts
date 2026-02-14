@@ -12,6 +12,11 @@ export function convertDriveToThumbnail(link: string): string {
   // Standard view link: https://drive.google.com/file/d/ITEM_ID/view?usp=sharing
   // We want: https://lh3.googleusercontent.com/d/ITEM_ID
 
+  // SAFEGUARD: If link is Facebook or explicitly external, return as is
+  if (link.includes('facebook.com') || link.includes('fbcdn.net')) {
+    return link;
+  }
+
   // EXPLICITLY IGNORE FOLDER LINKS
   if (link.includes("/folders/")) {
     return link;
