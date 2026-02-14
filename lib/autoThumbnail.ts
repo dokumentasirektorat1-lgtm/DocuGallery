@@ -26,7 +26,14 @@ export function repairThumbnail(url: string | undefined): string {
     // SAFEGUARD 1: Meta/Facebook Domain Filter
     // If link contains facebook.com or fbcdn.net, SKIP processing to prevent breaking valid tokens
     if (url.includes('facebook.com') || url.includes('fbcdn.net')) {
-        return url
+        // If it looks like a direct image link (fbcdn or extension), return as is
+        if (url.includes('fbcdn.net') || url.includes('scontent') || url.match(/\.(jpeg|jpg|gif|png|webp)($|\?)/i)) {
+            return url
+        }
+
+        // If it's just a Facebook Post link (not an image), return Universal Thumbnail (blue gradient)
+        // This fixes broken images for post insertions
+        return getPlaceholderThumbnail()
     }
 
     // SAFEGUARD 2: Domain Whitelist

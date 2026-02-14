@@ -31,11 +31,20 @@ export const metadata: Metadata = {
     siteName: 'DocuGallery Hub',
     locale: 'en_US',
     type: 'website',
+    images: [
+      {
+        url: '/opengraph-image',
+        width: 1200,
+        height: 630,
+        alt: 'DocuGallery Hub Preview',
+      }
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'DocuGallery Hub',
     description: "Enterprise documentation and gallery platform.",
+    images: ['/opengraph-image'],
   },
   robots: {
     index: true,
