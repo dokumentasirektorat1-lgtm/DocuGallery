@@ -222,7 +222,7 @@ function formatBytes(bytes: number): string {
  * Get placeholder thumbnail when no image is available
  * @returns Default placeholder image URL
  */
-function getPlaceholderThumbnail(): string {
+export function getPlaceholderThumbnail(): string {
     // Use a professional placeholder from Unsplash
     return "https://images.unsplash.com/photo-1557683316-973673baf926?w=800&h=600&fit=crop"
 }

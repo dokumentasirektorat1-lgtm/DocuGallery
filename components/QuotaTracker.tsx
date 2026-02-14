@@ -56,9 +56,36 @@ export function QuotaTracker({ projects }: QuotaTrackerProps) {
             // Matches: /file/d/ID, ?id=ID, /thumbnail?id=ID, /d/ID
             const driveRegex = /(?:file\/d\/|id=|d\/)([-\w]+)/;
 
+            // Import helper dynamically or use string directly if needed, but better to import
+            const { getPlaceholderThumbnail } = await import("@/lib/autoThumbnail")
+            const placeholderUrl = getPlaceholderThumbnail()
+
             // Iterate all projects and queue updates
             projects.forEach(p => {
+                // REPAIR LOGIC: Fix corrupted Facebook thumbnails
+                if (p.contentType === "facebook") {
+                    const currentUrl = p.thumbnailUrl || "";
+
+                    // Specific fix for items corrupted by previous "Fix All" (converted to Google/LH3)
+                    // OR if empty
+                    if (currentUrl.includes("google") || currentUrl.includes("lh3") || !currentUrl) {
+                        const ref = doc(db, "projects", p.id)
+                        batch.update(ref, {
+                            thumbnailUrl: placeholderUrl,
+                            updatedAt: serverTimestamp()
+                        })
+                        fixCount++
+                    }
+                    return; // SAFEGUARD: Stop processing Facebook items
+                }
+
+                // SKIP if no thumbnail
                 if (!p.thumbnailUrl) return;
+
+                // EXTRA SAFEGUARD: Skip any URL containing facebook
+                if (p.thumbnailUrl.includes("facebook.com") || p.thumbnailUrl.includes("fbcdn.net")) {
+                    return;
+                }
 
                 const match = p.thumbnailUrl.match(driveRegex);
 
@@ -68,13 +95,13 @@ export function QuotaTracker({ projects }: QuotaTrackerProps) {
                     // VALIDATION 1: Skip if ID matches the Project's main Folder ID
                     // (This prevents converting the folder icon to a broken file link)
                     if (fileId === p.driveFolderId) {
-                        console.warn(`Skipping ${p.title}: ID matches folder ID.`);
+                        // console.warn(`Skipping ${p.title}: ID matches folder ID.`);
                         return;
                     }
 
                     // VALIDATION 2: Skip if original URL explicitly mentions 'folders'
                     if (p.thumbnailUrl.includes("/folders/")) {
-                        console.warn(`Skipping ${p.title}: URL is a folder link.`);
+                        // console.warn(`Skipping ${p.title}: URL is a folder link.`);
                         return;
                     }
 
@@ -96,9 +123,9 @@ export function QuotaTracker({ projects }: QuotaTrackerProps) {
 
             if (fixCount > 0) {
                 await batch.commit()
-                await showSuccess(`Berhasil mengonversi ${fixCount} item ke format hemat kuota (LH3).`, "Sukses")
+                await showSuccess(`Berhasil memperbaiki ${fixCount} item (Facebook/Drive).`, "Sukses")
             } else {
-                await showInfo("Semua thumbnail sudah dalam format optimal (LH3).", "Sudah Optimal")
+                await showInfo("Semua thumbnail sudah aman/optimal.", "Sudah OK")
             }
         } catch (error: any) {
             console.error("Fix Thumbnails Error:", error)
