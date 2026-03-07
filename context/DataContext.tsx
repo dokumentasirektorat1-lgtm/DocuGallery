@@ -236,8 +236,6 @@ export function DataProvider({ children }: { children: ReactNode }) {
         await updateDoc(docRef, { role, status });
     }
 
-    if (!isInitialized) return null; // Prevent hydration mismatch
-
     return (
         <DataContext.Provider value={{ projects, users, addProject, updateProject, deleteProject, updateUserStatus, updateUser }}>
             {children}
