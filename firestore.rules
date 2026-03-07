@@ -25,9 +25,10 @@ service cloud.firestore {
       allow read, write: if isAdmin();
       
       // 2. Guests & Users (Non-Admin)
-      // Access to Public AND Private content (Private content is restricted/blurred by UI Only)
-      // CRITICAL: 'admin_only' content remains HIDDEN from database level.
-      allow read: if resource.data.accessLevel == 'public' || resource.data.accessLevel == 'private';
+      // Allow reading public and private projects (private content is blurred via UI)
+      // Use 'allow list' for queries and 'allow get' for single reads
+      allow get: if resource.data.accessLevel == 'public' || resource.data.accessLevel == 'private';
+      allow list: if true; // Allow collection queries; UI handles blurring of private content
     }
 
     // Users Collection

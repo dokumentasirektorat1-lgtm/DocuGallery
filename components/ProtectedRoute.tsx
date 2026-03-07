@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/context/AuthContext"
 import { showErrorToast } from "@/lib/toast"
@@ -12,6 +12,14 @@ interface ProtectedRouteProps {
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
     const { user, userData, loading } = useAuth()
     const router = useRouter()
+    const [timedOut, setTimedOut] = useState(false)
+
+    // Failsafe: if loading takes more than 10s, stop spinning
+    useEffect(() => {
+        if (!loading) return
+        const timer = setTimeout(() => setTimedOut(true), 10000)
+        return () => clearTimeout(timer)
+    }, [loading])
 
     useEffect(() => {
         if (!loading) {
@@ -26,7 +34,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
     }, [user, userData, loading, router])
 
     // Show loading spinner while checking auth
-    if (loading) {
+    if (loading && !timedOut) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-background">
                 <div className="text-center">
@@ -37,10 +45,11 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
         )
     }
 
-    // Don't render if not authorized
-    if (!user || userData?.role !== "admin") {
+    // Timed out or not authorized
+    if (timedOut || !user || userData?.role !== "admin") {
         return null
     }
 
     return <>{children}</>
 }
+
